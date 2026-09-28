@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore synaptic integration in a pyramidal neuron: presynaptic spikes, release, ion flow, EPSPs, IPSPs, and threshold firing.">
+  <title>Neuron circuits & population rhythms · Psych 342</title>
+  <style>
+:root{--navy:#00274c;--ink:#244047;--muted:#63777b;--teal:#287d70;--paper:#f6f5ef;--line:#dbe2dc;--gold:#b88c15;--purple:#805fa2;--blue:#287eb4;--coral:#c65d4e;--inset-width:clamp(365px,41%,470px)}
+*{box-sizing:border-box}body{margin:0;height:100dvh;overflow:hidden;font:12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper)}button,input,select{font:inherit}button,summary,select{cursor:pointer}button{border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--navy);font-size:10px;padding:6px 9px;line-height:1.2;font-weight:600;white-space:nowrap}button:hover{background:#edf3ea}button:disabled{opacity:.4;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,canvas:focus-visible{outline:3px solid #b89314;outline-offset:2px}button[hidden],[hidden]{display:none!important}input{accent-color:var(--teal)}input[type=checkbox]{margin:0;width:12px;height:12px;flex-shrink:0}input[type=range]{width:100%;margin:0;min-height:20px}input[type=number]{width:60px;border:1px solid #c6d3ca;border-radius:4px;padding:3px 5px;font-size:12px;color:var(--ink)}select{min-width:0;border:1px solid #c6d3ca;border-radius:4px;background:#fff;color:var(--ink);padding:4px;font-size:10px}a{color:var(--teal);text-underline-offset:3px}h2,h3,p{margin:0}header{height:50px;background:var(--navy);color:white;padding:0 15px;display:flex;align-items:center;gap:24px}.brand{display:flex;gap:8px;align-items:center;font-size:10px;font-weight:700;letter-spacing:.05em}.brand b{font:900 30px/1 Georgia,serif;color:#ffcb05}.brand small{display:block;font-size:8px;font-weight:400;letter-spacing:0;opacity:.75}h1{font:400 23px/1.1 Georgia,serif;letter-spacing:-.025em;margin:0}h1 em{color:#c9dfd1}header nav{display:flex;align-items:center;gap:7px;margin-left:auto}header button{background:#ffffff0d;color:#edf5f2;border-color:#ffffff38}header button:hover{background:#ffffff20}header a{font-size:10px;color:#d9e7e5;margin:0 5px}#controls-toggle,#controls-close{display:none}
+main{height:calc(100dvh - 50px);padding:8px}.workspace{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 218px;gap:8px}.laboratory{min-width:0;min-height:0;display:grid;grid-template-rows:34px 82px minmax(0,1fr) 66px 142px;background:white;border:1px solid var(--line);border-radius:8px;overflow:hidden}.scene-toolbar{display:flex;align-items:center;gap:13px;padding:0 10px}.scene-toolbar>label{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap}.view-buttons{display:flex;gap:4px;margin-right:auto}.view-buttons button{font-size:10px;border:0;background:#f2f5ed;padding:5px 8px}.view-buttons button[aria-pressed=true]{background:#dfece1;color:var(--teal)}.guide-box{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:8px 12px;border-top:1px solid var(--line);background:#eef4ee;min-height:0}.guide-box[data-holding=true]{background:#fff6d8}.guide-copy{min-width:0}.guide-box h2{font-size:13px;line-height:1.3;margin:0 0 4px}.guide-box p{font-size:11px;line-height:1.45;max-width:900px}.guide-actions{flex-shrink:0;width:155px;font-size:10px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}.guide-actions label{display:flex;gap:5px;align-items:center}.guide-actions output{font-size:9px;color:var(--muted)}.guide-actions button{padding:4px 7px;font-size:9px}
+.scene-wrap{position:relative;min-height:0;background:#f3f6ef;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}#scene{width:100%;height:100%;display:block;touch-action:none;cursor:grab}#scene:active{cursor:grabbing}.scene-meta{position:absolute;left:12px;top:8px;right:calc(var(--inset-width) + 26px);display:flex;flex-direction:column;gap:2px;font-size:9px;color:var(--muted);pointer-events:none}.scene-meta output{font-weight:650;color:var(--teal)}.scene-key{position:absolute;left:12px;bottom:7px;right:calc(var(--inset-width) + 26px);display:flex;flex-direction:column;gap:3px;font-size:9px;color:var(--muted);pointer-events:none}.legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:9px}.legend span{display:flex;gap:4px;align-items:center}.legend i{width:7px;height:7px;border-radius:50%}.legend-note{font-size:8px}.exc{background:var(--gold)}.inh{background:var(--purple)}.neg{background:var(--blue)}.pos{background:var(--coral)}#return-current{color:var(--teal)}.scene-note{font-size:8px;opacity:.8}#spike-banner{position:absolute;top:55px;left:15px;color:#665015;background:#fff6c8;border:1px solid #e3c966;font-size:10px;font-weight:650;padding:5px 9px;border-radius:5px}
+.synapses{position:absolute;right:9px;top:9px;bottom:9px;width:var(--inset-width);display:grid;grid-template-rows:1fr 1fr;gap:8px}.synapse-inset{display:grid;grid-template-rows:26px minmax(0,1fr) 31px;min-height:0;min-width:0;padding:5px 7px;background:#fffffff5;border:1px solid #cfdace;border-radius:7px;box-shadow:0 3px 12px #2340300c}.excitatory-inset{border-top:2px solid #c7a643}.inhibitory-inset{border-top:2px solid #9c83b3}.panel-title{display:flex;align-items:center;gap:8px}.panel-title h2{font-size:12px;margin:0;display:flex;gap:5px;align-items:center;font-weight:650}.input-dot{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:white;font-weight:700;font-size:9px;width:17px;height:17px;border-radius:50%}.panel-title output{font-size:9px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:auto}.panel-title button{font-size:9px;padding:4px 5px}.inset-body{display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:6px;min-height:0}.synapses canvas{display:block;width:100%;height:100%;min-height:0;min-width:0}.ion-readout{border-left:1px solid #e3e9df;padding:4px 0 0 7px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:9px;min-width:0;line-height:1.3;font-variant-numeric:tabular-nums}.flux-row{display:grid;grid-template-columns:1fr auto;gap:2px;font-size:9px}.flux-row output{text-align:right}.sodium{color:var(--blue)}.potassium{color:var(--coral)}.flux-track{grid-column:1/-1;height:3px;background:#e9ede6;overflow:hidden;border-radius:3px}.flux-track i{display:block;height:100%;width:0;background:currentColor}.net-current{font-weight:700;color:var(--teal);font-size:10px}#charge-result,#chloride-effect{color:var(--muted);font-size:9px}.local-voltage{color:var(--muted);border-top:1px solid #e3e9df;padding-top:3px;font-size:9px}.local-voltage output{color:var(--ink);font-weight:650}.ion-name{font-weight:650;color:var(--purple)}.synapse-caption{display:flex;flex-direction:column;justify-content:end;gap:1px;font-size:9px;line-height:1.3;min-width:0}.stage-label{font-weight:650;color:var(--ink)}.stage-label[data-calcium=true]{color:var(--blue)}.synapse-caption p{color:var(--muted);font-size:9px}
+.transport{padding:6px 10px 0;min-width:0}.playback{display:flex;align-items:center;gap:8px}.primary{background:var(--navy);color:white;border-color:var(--navy)}.primary:hover{background:#174c72}#play{min-width:94px}#time-value{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:3px}#playback-status{margin-left:auto;font-size:9px;color:var(--muted);text-align:right;max-width:245px}#playback-status[data-calcium=true]{color:var(--blue)}.timebar{display:flex;align-items:center;gap:9px;font-size:9px;color:var(--muted);margin-top:2px}.timebar span{white-space:nowrap}.voltage-panel{min-height:0;display:grid;grid-template-rows:30px minmax(0,1fr);padding:0 10px 3px;border-top:1px solid var(--line)}.voltage-heading{display:flex;gap:13px;align-items:center;font-size:10px}.voltage-heading h2{font-size:11px;font-weight:650}.voltage-heading label{display:flex;gap:4px;align-items:center;color:var(--muted);white-space:nowrap}.voltage-heading select{font-size:9px;padding:3px}.voltage-readout{white-space:nowrap;color:var(--muted);font-size:10px}.voltage-readout output{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums;color:var(--teal)}#spike-count{margin-left:auto;font-size:9px;font-weight:650;color:var(--teal);white-space:nowrap}#voltage{width:100%;height:100%;display:block;min-height:0}
+.controls{position:relative;min-width:0;background:white;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto}.controls-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.controls-heading h2{font-size:13px}.help{color:var(--muted);font-size:10px;line-height:1.4;margin:3px 0}.control{margin:9px 0}.control label{display:flex;justify-content:space-between;gap:6px;font-size:11px;font-weight:600;margin-bottom:2px}.control output{color:var(--teal);font-variant-numeric:tabular-nums;white-space:nowrap}.control select{width:100%}.population-control{padding-bottom:7px;border-bottom:1px solid var(--line)}.population-control .control{margin:0}.population-control output{font-size:15px}.input-control{padding:10px 0 8px;border-bottom:1px solid var(--line)}.input-control h3{display:flex;gap:6px;align-items:center;font-size:11px;margin:0 0 5px}.input-control label{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px}.number-unit{display:flex;gap:4px;align-items:center;color:var(--muted)}.input-foot{display:flex;align-items:center;justify-content:space-between;gap:4px}.input-foot small{font-size:9px;color:var(--muted);line-height:1.3}.input-foot button{border:0;padding:2px 0;color:var(--teal);font-size:9px;background:transparent;flex-shrink:0}.phase-control{padding-bottom:7px;margin-bottom:0}.eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:700;margin:0 0 3px}.presets{border-top:1px solid var(--line);padding-top:9px;display:flex;flex-direction:column;gap:5px}.presets button{text-align:left;font-size:10px;padding:7px 8px}.controls details{position:relative;margin-top:12px;border-top:1px solid var(--line);padding-top:9px}.controls summary{font-size:10px;font-weight:650}.advanced-content{background:#fff;border:1px solid #c5d3c7;box-shadow:0 5px 24px #173b2826;position:absolute;bottom:23px;left:-3px;right:-3px;border-radius:6px;padding:10px;z-index:8}.advanced-content .control{margin:0 0 9px}.field-scope{font-size:9px;color:var(--muted);line-height:1.5;margin-top:13px}
+dialog{border:1px solid var(--line);border-radius:10px;padding:0;width:min(900px,90vw);max-height:85dvh;color:var(--ink);box-shadow:0 15px 80px #00182e44}dialog::backdrop{background:#00274c66}.dialog-heading{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#eef4ee;border-bottom:1px solid var(--line);position:sticky;top:0}.dialog-heading h2{font:400 23px Georgia,serif}.notes{padding:0 20px 20px;font-size:12px;line-height:1.65}.notes h3{font-size:13px;margin:17px 0 5px}.notes p{margin:8px 0}.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}.notes li{margin:8px 0}.skip{position:absolute;top:-100px;left:15px;z-index:20;background:white;padding:10px}.skip:focus{top:10px}
+@media(min-height:900px){.laboratory{grid-template-rows:36px 82px minmax(0,1fr) 68px 164px}.synapse-inset{grid-template-rows:29px minmax(0,1fr) 34px}.ion-readout{font-size:10px;gap:8px}.flux-row{font-size:10px}.synapse-caption,.synapse-caption p{font-size:10px}.inset-body{grid-template-columns:minmax(0,1fr) 115px}.synapses{gap:10px}}
+@media(max-width:1150px){.workspace{grid-template-columns:minmax(0,1fr)}#controls-toggle,#controls-close{display:block}.controls{display:none;position:fixed;right:9px;top:58px;bottom:9px;width:245px;z-index:12;box-shadow:0 4px 30px #163f353d}.controls.open{display:block}.scene-toolbar{gap:12px}.brand small{display:none}.laboratory{grid-template-rows:34px 82px minmax(0,1fr) 66px 142px}}
+@media(max-width:760px){:root{--inset-width:340px}header{gap:12px;padding:0 10px}.brand span{display:none}header h1{font-size:19px}header a{display:none}header button{font-size:9px;padding:5px}header nav{gap:4px}.scene-toolbar{gap:8px;padding:0 6px}.scene-toolbar>label{font-size:9px}.view-buttons{gap:2px}.view-buttons button{font-size:9px;padding:5px 6px}.guide-box{gap:8px;padding:7px 9px}.guide-box h2{font-size:12px}.guide-box p{font-size:10px}.guide-actions{width:124px;font-size:9px}.guide-actions output{font-size:8px}.playback{gap:6px}#playback-status{display:none}.legend-note{display:none}.voltage-heading{gap:8px}.scene-meta,.scene-key{left:8px}.inset-body{grid-template-columns:minmax(0,1fr) 96px}.ion-readout{padding-left:5px;font-size:8px;gap:3px}.flux-row,#charge-result,#chloride-effect,.local-voltage{font-size:8px}.net-current{font-size:9px}.panel-title h2{font-size:11px}.panel-title{gap:5px}.panel-title button{font-size:8px}.panel-title output{font-size:8px}.synapse-caption,.synapse-caption p{font-size:8px}}
+@media(max-width:600px){header{height:43px;gap:7px}header h1{font-size:16px}.brand b{font-size:24px}header button{font-size:8px;padding:4px}#biology-open{max-width:57px;white-space:normal}main{height:calc(100dvh - 43px);padding:4px}.laboratory{grid-template-rows:52px 105px minmax(0,1fr) 61px 119px}.scene-toolbar{flex-wrap:wrap;justify-content:center;align-content:center;gap:4px 10px}.view-buttons{width:100%;justify-content:center;margin:0}.scene-toolbar>label{font-size:8px}.guide-box{display:block;padding:6px 8px}.guide-box h2{font-size:11px;margin-bottom:3px}.guide-box p{font-size:9px;line-height:1.4}.guide-actions{width:100%;flex-direction:row;align-items:center;gap:7px;margin-top:5px;font-size:8px}.guide-actions button{font-size:8px;padding:3px 5px}.guide-actions output{font-size:7px}.synapses{left:5px;right:5px;bottom:5px;top:auto;width:auto;height:174px;grid-template-rows:1fr;grid-template-columns:1fr 1fr;gap:5px}.synapse-inset{padding:4px;grid-template-rows:21px minmax(0,1fr) 33px}.panel-title{gap:3px;flex-wrap:wrap}.panel-title h2{font-size:10px}.panel-title .input-dot{width:13px;height:13px;font-size:8px}.panel-title output{font-size:7px}.panel-title button{font-size:7px;padding:3px;border:0;position:absolute;bottom:8px;right:5px;background:transparent}.synapse-inset{position:relative}.inset-body{display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 39px;gap:2px}.ion-readout{border:0;padding:0 2px;display:grid;grid-template-columns:1fr 1fr;gap:1px 5px;align-content:center;line-height:1.2}.flux-row{font-size:7px;gap:0}.flux-track{display:none}.net-current{font-size:8px;grid-column:1/-1}#charge-result,#chloride-effect{font-size:7px;grid-column:1/-1}.local-voltage{display:none}.ion-name{font-size:8px;grid-column:1/-1}.synapse-caption{justify-content:start;padding-top:2px;gap:1px}.synapse-caption p{font-size:7px;max-width:100%}.stage-label{font-size:7px}.scene-meta{right:8px;font-size:8px;top:5px}.scene-key{right:8px;bottom:181px;font-size:7px;gap:1px}.legend{font-size:7px;gap:7px}.scene-note{display:none}.legend-note{display:none}#return-current{font-size:7px}.playback{gap:4px}.transport{padding:5px 6px 0}.playback button{font-size:8px;padding:5px}#play{min-width:73px}#speed{font-size:8px;width:108px;padding:3px}#time-value{font-size:10px;margin-left:auto}#next-event{display:none}#step{font-size:8px}.timebar{font-size:8px;margin-top:3px}.voltage-panel{grid-template-rows:29px minmax(0,1fr);padding:0 5px 2px}.voltage-heading{gap:6px}.voltage-heading h2{font-size:9px}.voltage-readout output{font-size:13px}.voltage-readout span{font-size:8px}.voltage-heading label{font-size:8px}.voltage-heading select{font-size:8px;width:88px}#spike-count{font-size:7px}#spike-banner{font-size:8px;top:31px;left:auto;right:8px;padding:3px}.notes-grid{grid-template-columns:1fr;gap:0}.controls{top:47px}}
+@media(max-width:360px){header h1{font-size:14px}header nav{gap:2px}header{padding:0 6px;gap:6px}#controls-toggle{width:48px;white-space:normal}#biology-open{width:43px}.guide-box p{font-size:8px}.guide-box h2{font-size:10px}.guide-actions output{max-width:95px}.voltage-heading label:has(#dendrites){font-size:7px;gap:1px}.voltage-heading{gap:4px}#spike-count{font-size:6px}.voltage-heading select{width:73px}}
+@media(max-height:720px) and (min-width:601px){.laboratory{grid-template-rows:31px 75px minmax(0,1fr) 60px 116px}.controls{padding:9px}.input-control{padding:6px 0}.presets{gap:4px;padding-top:6px}.presets button{padding:5px 7px}.field-scope{margin-top:8px}.controls details{margin-top:8px}.guide-box p{font-size:10px}.synapse-inset{grid-template-rows:24px minmax(0,1fr) 29px}.ion-readout{gap:2px;font-size:8px}.flux-row,#charge-result,#chloride-effect,.local-voltage{font-size:8px}}
+
+/* The model and both recording channels share one screen. */
+:root{--recording-width:clamp(360px,39%,480px)}
+.laboratory{grid-template-rows:34px 82px minmax(0,1fr) 66px}
+.scene-meta{right:calc(var(--recording-width) + 25px)}
+.scene-key{right:calc(var(--recording-width) + 25px);bottom:169px}
+.synapses{top:auto;left:9px;right:calc(var(--recording-width) + 18px);bottom:9px;width:auto;height:150px;grid-template-columns:1fr 1fr;grid-template-rows:1fr;gap:8px}
+.synapse-inset{grid-template-rows:25px minmax(0,1fr) 27px;padding:4px 6px}
+.inset-body{display:block;min-height:0}.panel-title button{margin-left:auto}.synapse-caption,.synapse-caption p{font-size:8px}.panel-title h2{font-size:11px}
+.recordings-panel{position:absolute;top:9px;right:9px;bottom:9px;width:var(--recording-width);border:1px solid #cfdace;border-radius:7px;background:#fffffffa;display:grid;grid-template-rows:45px 32px 28px minmax(0,1fr) 24px 45px;padding:8px 10px 5px;box-shadow:0 3px 14px #173a2110}
+.recordings-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.recordings-heading h2{font:400 19px/1.15 Georgia,serif;color:var(--navy)}.recordings-heading .eyebrow{font-size:8px}.recordings-heading output{font-size:9px;color:var(--teal);background:#eef4ee;padding:4px 6px;border-radius:4px;white-space:nowrap}.recording-options{display:flex;gap:9px;align-items:center;font-size:9px;min-width:0}.recording-options label{display:flex;gap:4px;align-items:center;white-space:nowrap}.recording-options select{font-size:9px;padding:3px}.recording-channels{display:flex;align-items:center;gap:10px;font-size:9px}.recording-channels label{display:flex;align-items:center;gap:3px}.electrode-number{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;color:white;font-size:9px;font-weight:700}.intra{background:#287d70}.extra{background:#287eb4}.recordings-panel #voltage{width:100%;height:100%;min-width:0;min-height:0;contain:size}.recording-readouts{display:flex;align-items:center;justify-content:space-between;gap:5px;border-top:1px solid var(--line);font-size:9px;font-variant-numeric:tabular-nums}.recording-readouts>span:nth-child(1){color:#287d70}.recording-readouts>span:nth-child(2){color:#287eb4}.recording-readouts output{font-weight:650}.recording-readouts #spike-count{font-size:8px}.recording-footer{display:flex;flex-direction:column;gap:4px;justify-content:center;font-size:8px;color:var(--muted)}.recording-footer label{display:flex;align-items:center;gap:5px}.recording-footer select{font-size:8px;padding:2px}.recording-footer>span{line-height:1.3}
+#neuron-count-value{width:65px;font-size:12px;padding:2px 4px}.population-control .control label{align-items:center}.population-control .help{font-size:9px}.input-control{padding:8px 0 6px}.circuit-presets{display:grid;grid-template-columns:1fr 1fr;gap:4px}.circuit-presets button:first-child{grid-column:1/-1}.circuit-presets button{font-size:9px;padding:6px}.rhythm-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:3px}.rhythm-presets button{padding:6px 2px;text-align:center;font-size:10px}.rhythm-presets small{display:block;color:var(--muted);font-size:8px;font-weight:400;margin-top:2px}.rhythm-presets button[aria-pressed=true]{background:#e0ece3;border-color:#80a894;color:var(--teal)}#rhythm-description{font-size:9px;min-height:25px;margin:1px 0}.presets{gap:5px}.field-scope{font-size:8px;margin-top:9px}#playback-status{max-width:350px}#spike-banner{top:43px;font-size:9px}
+@media(min-height:900px){.laboratory{grid-template-rows:36px 82px minmax(0,1fr) 68px}.synapses{height:174px}.synapse-inset{grid-template-rows:27px minmax(0,1fr) 30px}.synapse-caption,.synapse-caption p{font-size:9px}.scene-key{bottom:193px}}
+@media(max-width:1150px){.laboratory{grid-template-rows:34px 82px minmax(0,1fr) 66px}}
+@media(max-width:900px){:root{--recording-width:43%}.recordings-panel{padding:6px;grid-template-rows:44px 34px 29px minmax(0,1fr) 25px 47px}.recording-options{gap:5px;font-size:8px}.recording-options select{font-size:8px;padding:3px}.recording-channels{font-size:8px;gap:6px}.recording-readouts{font-size:8px;flex-wrap:wrap}.recording-readouts #spike-count{font-size:7px}.recordings-heading h2{font-size:16px}.recordings-heading output{font-size:8px}.synapses{gap:5px;left:5px;right:calc(var(--recording-width) + 18px);height:145px}.scene-key{bottom:164px}.synapse-inset{grid-template-rows:23px minmax(0,1fr) 31px}.panel-title h2{font-size:10px}.panel-title button{font-size:8px;padding:3px}.synapse-caption,.synapse-caption p{font-size:7px}.legend-note{display:none}}
+@media(max-width:600px){.laboratory{grid-template-rows:52px 94px minmax(0,1fr) 57px}.scene-wrap{display:grid;grid-template-rows:minmax(0,1fr) 225px}.recordings-panel{left:5px;right:5px;top:auto;bottom:5px;width:auto;height:220px;grid-template-rows:29px 23px minmax(0,1fr) 20px;padding:4px 6px}.recordings-heading{grid-row:1}.recordings-heading h2{font-size:13px}.recordings-heading .eyebrow{display:none}.recording-options{grid-row:2}.recording-channels{position:absolute;right:6px;top:36px;font-size:0;gap:4px}.recording-channels .electrode-number{width:14px;height:14px;font-size:8px}.recording-options{gap:4px;font-size:7px}.recording-options select{font-size:7px;padding:2px}.recording-options label:last-child{font-size:7px}.recordings-panel #voltage{grid-row:3}.recording-readouts{grid-row:4;font-size:8px}.recording-footer{display:none}.synapses{bottom:235px;left:5px;right:5px;height:107px;gap:5px}.synapse-inset{grid-template-rows:18px minmax(0,1fr) 22px;padding:3px}.panel-title button{position:static;font-size:6px;padding:2px;max-width:54px;white-space:nowrap}.panel-title h2{font-size:9px}.synapse-caption{padding-top:0}.synapse-caption,.synapse-caption p{font-size:6px}.synapse-caption p{line-height:1.2}.stage-label{font-size:6px}.inset-body{display:block}.scene-meta{right:8px;font-size:7px}.scene-key{bottom:346px;right:8px;gap:1px}#return-current{display:none}.scene-key .legend{font-size:6px}#scene{grid-row:1 / -1;position:absolute;inset:0}#spike-banner{top:28px;font-size:7px}.guide-box p{font-size:8px}.guide-box h2{font-size:10px}.guide-actions{margin-top:4px}.recordings-heading output{padding:2px 5px}.transport{padding-top:5px}#playback-status{display:none}}
+@media(max-height:720px) and (min-width:601px){.laboratory{grid-template-rows:31px 75px minmax(0,1fr) 60px}.synapses{height:132px}.scene-key{bottom:150px}.input-control{padding:5px 0}.controls-heading{margin-bottom:5px}.control{margin:6px 0}.presets{padding-top:6px}.presets button{padding:5px 3px}.controls details{padding-top:7px;margin-top:7px}.field-scope{margin-top:7px}}
+
+/* Shared workspace, two independent teaching modes. */
+.mode-bar{height:34px;display:flex;align-items:center;gap:18px;padding:0 12px;background:#eaf0e8;border-bottom:1px solid var(--line)}.mode-tabs{display:flex;align-self:stretch;gap:3px}.mode-tabs button{border:0;border-bottom:3px solid transparent;background:transparent;border-radius:0;font-size:11px;padding:7px 12px}.mode-tabs button[aria-selected=true]{border-bottom-color:var(--teal);background:#fff;color:var(--teal)}#mode-context{font-size:10px;color:var(--muted)}main{height:calc(100dvh - 84px)}.scalp{background:#b46137}.recording-readouts>span:nth-child(3){color:#b46137}.network-intro{font-size:10px;line-height:1.45;color:var(--muted);padding-bottom:5px}.network-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.network-pair label{display:flex;flex-direction:column;align-items:flex-start;gap:3px;font-size:9px}.network-pair input{width:100%;font-size:12px}.network-input .help{font-size:9px;margin-top:5px}.network-presets>div{display:grid;grid-template-columns:1fr 1fr;gap:5px}.network-presets button{font-size:9px;padding:7px 5px}.network-presets button[aria-pressed=true]{background:#e1ede3;color:var(--teal);border-color:#82aa97}.network-result{font-size:9px;margin-top:8px;padding:6px;background:#edf4ee;border-radius:4px}.network-notes{border-bottom:1px solid var(--line);padding-bottom:12px}.network-mode .guide-actions{display:none}.network-mode .recordings-panel{grid-template-rows:40px 30px 25px minmax(0,1fr) 24px 38px}.network-mode .recordings-heading h2{font-size:18px}.network-mode .recording-channels{gap:7px;font-size:8px}.network-mode .recording-readouts{font-size:8px}.network-mode .recording-readouts #spike-count{font-size:7px}.network-mode .synapses{height:122px}.network-mode .synapse-inset{grid-template-rows:24px minmax(0,1fr) 28px}.network-mode .scene-key{bottom:141px}.network-mode #return-current{display:none}.network-mode .panel-title h2{font-size:10px}.network-mode .panel-title button{display:none}.network-mode .synapse-caption p{font-size:8px}.network-mode #spike-banner{top:44px;left:auto;right:calc(var(--recording-width) + 20px)}
+@media(max-width:760px){#mode-context{display:none}.mode-tabs button{font-size:10px}.network-mode .recording-channels{font-size:7px;gap:4px}.network-mode .recordings-heading h2{font-size:15px}.network-mode .recording-readouts{font-size:7px}}
+@media(max-width:600px){.network-mode .recordings-panel{height:235px;grid-template-rows:25px 23px minmax(0,1fr) 20px}.network-mode .recordings-heading h2{font-size:13px}.network-mode .recording-channels{font-size:0;top:33px}.network-mode .synapses{bottom:248px;height:87px}.network-mode .scene-key{bottom:340px}.network-mode .synapse-inset{grid-template-rows:18px minmax(0,1fr) 24px}.network-mode .panel-title h2{font-size:8px}.network-mode .synapse-caption,.network-mode .synapse-caption p{font-size:6px}.network-mode #spike-banner{display:none}.mode-bar{padding:0 5px}.mode-tabs button{padding:7px 8px}.network-mode .recording-readouts #spike-count{font-size:6px}}
+@media(max-height:720px) and (min-width:601px){.network-mode .synapses{height:102px}.network-mode .scene-key{bottom:120px}.network-input.input-control{padding:5px 0}.network-pair input{padding:2px 4px}.network-intro{font-size:9px}.network-result{margin-top:5px}.network-presets button{padding:5px}}
+.network-mode #network-controls>.control{margin:6px 0}.network-mode .network-input{padding:6px 0}.network-mode .network-intro{font-size:9px}.network-mode .network-result{padding:4px 6px;font-size:8px}.network-mode .field-scope{font-size:8px;line-height:1.35;margin-top:6px}.network-mode .network-presets{padding-top:7px}.network-mode .network-presets button{padding:6px 5px}
+
+/* Continuous diverging key for the qualitative voltage map. */
+.legend .field-gradient-key{gap:5px}.legend .field-ramp{display:inline-block;width:66px;height:7px;border-radius:4px;background:linear-gradient(90deg,#75abd2 0%,#bbd5df 25%,#f3f6ef 50%,#e7c8bb 75%,#d7978b 100%);border:1px solid #6d877029;flex-shrink:0}@media(max-width:600px){.legend .field-ramp{width:42px;height:5px}.legend .field-gradient-key{gap:3px}}
+
+</style>
+
+</head>
+<body>
+<a class="skip" href="#scene">Skip to circuit</a>
+<header><div class="brand"><b aria-hidden="true">M</b><span>PSYCH 342<small>University of Michigan</small></span></div><h1>One neuron. <em>Two inputs.</em></h1><nav><button id="controls-toggle" aria-expanded="false" aria-controls="controls">Inputs & settings</button><button id="biology-open">Biology & model</button><button id="reset">Reset ↺</button></nav></header>
+<div class="mode-bar"><div class="mode-tabs" role="tablist" aria-label="Simulation scale"><button id="tab-circuit" role="tab" aria-selected="true" aria-controls="circuit" data-mode="circuit">Single-neuron circuit</button><button id="tab-population" role="tab" aria-selected="false" aria-controls="circuit" tabindex="-1" data-mode="population">Population rhythms</button></div><span id="mode-context">Spikes → synapses → membrane voltage</span></div>
+<main><section class="workspace" id="circuit" role="tabpanel" aria-labelledby="tab-circuit" aria-label="Interactive pyramidal-neuron circuit">
+<div class="laboratory">
+  <div class="scene-toolbar"><div class="view-buttons" aria-label="Camera views"><button data-view="circuit" aria-pressed="true">Fit all</button><button data-view="neuron" aria-pressed="false">Neuron 1</button><button data-view="exc" aria-pressed="false">E contact</button><button data-view="inh" aria-pressed="false">I contact</button></div><label title="Extracellular voltage from postsynaptic currents"><input type="checkbox" id="field" checked> Voltage map</label><label><input type="checkbox" id="arrows"> Field arrows</label></div>
+  <div class="guide-box" id="guide-box" aria-live="polite"><div class="guide-copy"><h2 id="guide-title">Follow the circuit, one stage at a time</h2><p id="guide-text"></p></div><div class="guide-actions"><label><input id="guide-pauses" type="checkbox" checked> Auto stage pauses</label><output id="guide-countdown"></output><button id="guide-continue" hidden>Continue now →</button></div></div>
+  <div class="scene-wrap">
+    <canvas id="scene" tabindex="0" role="img" aria-label="A pyramidal neuron with excitatory and inhibitory presynaptic inputs; scroll to zoom, drag to pan."></canvas>
+    <div class="scene-meta"><span id="population-summary"></span><output id="population-dipole"></output></div>
+    <div id="spike-banner" hidden>Postsynaptic action potential</div>
+    <div class="scene-key"><div class="legend"><span class="field-gradient-key" title="Pale = near zero; stronger color = larger voltage magnitude. Color scale adjusts to population size and stays fixed during playback. Compare measured amplitudes in the plots."><span>− outside</span><i class="field-ramp" aria-hidden="true"></i><span>+ outside</span></span><span class="legend-note">Extracellular voltage ≠ membrane voltage</span></div><output id="return-current"></output><span class="scene-note">Scroll to zoom · drag to pan · Home to fit</span></div>
+    <div class="synapses" aria-label="Live synapse insets for neuron 1">
+      <section class="synapse-inset excitatory-inset" aria-labelledby="exc-title">
+        <div class="panel-title"><h2 id="exc-title"><span class="input-dot exc">E</span> Glutamate</h2><button id="replay-e" title="Replay calcium entry in Auto slow motion">Replay Ca²⁺ ↺</button></div>
+        <div class="inset-body"><canvas id="synapse-e" role="img" aria-label="Excitatory synapse close-up"></canvas></div><div class="synapse-caption"><span id="stage-e" class="stage-label"></span><p id="status-e"></p></div>
+      </section>
+      <section class="synapse-inset inhibitory-inset" aria-labelledby="inh-title">
+        <div class="panel-title"><h2 id="inh-title"><span class="input-dot inh">I</span> GABA</h2><button id="replay-i" title="Replay calcium entry in Auto slow motion">Replay Ca²⁺ ↺</button></div>
+        <div class="inset-body"><canvas id="synapse-i" role="img" aria-label="Inhibitory synapse close-up"></canvas></div><div class="synapse-caption"><span id="stage-i" class="stage-label"></span><p id="status-i"></p></div>
+      </section>
+    </div>
+    <section class="recordings-panel" aria-label="Synchronized electrode recordings">
+      <div class="recordings-heading"><div><p class="eyebrow" id="recording-sites">Two recording sites</p><h2>From cell to electrode</h2></div><output id="recording-mode">Circuit</output></div>
+      <div class="recording-options"><label>Window <select id="window"><option value="300">300 ms</option><option value="1000">1 s</option><option value="2000">2 s</option><option value="4000">4 s</option><option value="10000">10 s</option></select></label><label>Field view <select id="field-filter" title="Filters recorded fields; the voltage map stays raw."><option value="raw">Raw · DC</option><option value="eeg">EEG · 0.5–40 Hz</option></select></label><label title="Applies to the extracellular channel"><input id="negative-up" type="checkbox" checked> − up</label></div>
+      <div class="recording-channels" aria-label="Visible channels"><label><input id="show-intra" type="checkbox" checked> <span class="electrode-number intra">1</span> Intracellular</label><label><input id="show-extra" type="checkbox" checked> <span class="electrode-number extra">2</span> Extracellular</label><label id="scalp-channel" hidden><input id="show-scalp" type="checkbox" checked> <span class="electrode-number scalp">3</span> Scalp EEG</label></div>
+      <canvas id="voltage" role="img" aria-label="Two synchronized electrode traces: intracellular membrane voltage and extracellular point voltage"></canvas>
+      <div class="recording-readouts"><span>1 <output id="vm-value">−65.0</output> mV</span><span>2 <output id="extra-value">0.00</output> µV</span><span id="scalp-readout" hidden>3 <output id="scalp-value">0.000</output> µV</span><span id="spike-count">0 spikes</span></div>
+      <div class="recording-footer"><label>Field scale <select id="field-scale"><option value="0">Fit visible</option><option value="1">±1 µV</option><option value="5">±5 µV</option><option value="20">±20 µV</option><option value="100">±100 µV</option><option value="500">±500 µV</option></select></label><span id="recording-note">2: distant reference · 1: across soma membrane</span></div>
+    </section>
+  </div>
+  <div class="transport"><div class="playback"><button class="primary" id="play">▶ Run circuit</button><select id="speed" aria-label="Playback speed"><option value="auto">Auto · slow near events</option><option value="0.0005">2,000× slower · Ca²⁺</option><option value="0.004">250× slower</option><option value="0.02">50× slower</option><option value="0.1">10× slower</option><option value="1">Real biological time</option></select><output id="time-value" title="Biological time">0.3200 s</output><button id="step" title="Pause and advance one tenth of a millisecond">+0.1 ms</button><button id="next-event">Next event →</button><span id="playback-status" role="status"></span></div><div class="timebar"><span>0 s</span><input id="time" type="range" min="0" max="10000" step="0.1" value="320" aria-label="Biological time, in milliseconds"><span>10 s</span></div></div>
+
+</div>
+<aside class="controls" id="controls" aria-label="Circuit settings"><div class="controls-heading"><h2>Inputs & population</h2><button id="controls-close" aria-label="Close settings">×</button></div>
+  <div id="circuit-controls"><section class="population-control"><div class="control"><label for="neuron-count">Pyramidal neurons <input id="neuron-count-value" aria-label="Pyramidal neuron count" type="number" min="1" max="4096" step="1" value="1"></label><input id="neuron-count" type="range" min="1" max="4096" step="1" value="1"></div><p class="help" id="population-help">Two inputs drive aligned targets. Insets and intracellular trace follow neuron 1.</p></section>
+  <section class="input-control"><h3><span class="input-dot exc">E</span> Excitatory input</h3><label for="rateE">Firing rate <span class="number-unit"><input id="rateE" type="number" min="0" max="100" step="0.1" value="0.2" inputmode="decimal"> Hz</span></label><input id="rateE-slider" type="range" min="0" max="100" step="0.1" value="0.2" aria-label="Excitatory firing rate in hertz"><div class="input-foot"><small id="period-e"></small><button id="next-e">Next E →</button></div></section>
+  <section class="input-control"><h3><span class="input-dot inh">I</span> Inhibitory input</h3><label for="rateI">Firing rate <span class="number-unit"><input id="rateI" type="number" min="0" max="100" step="0.1" value="0.2" inputmode="decimal"> Hz</span></label><input id="rateI-slider" type="range" min="0" max="100" step="0.1" value="0.2" aria-label="Inhibitory firing rate in hertz"><div class="input-foot"><small id="period-i"></small><button id="next-i">Next I →</button></div></section>
+  <div class="control phase-control"><label for="phase">Inhibitory phase <output id="phase-value">0°</output></label><input id="phase" type="range" min="0" max="360" step="5" value="0"><p class="help" id="phase-note"></p></div>
+  <div class="presets"><p class="eyebrow">Try a comparison</p><div class="circuit-presets"><button data-preset="sparse">Sparse · 0.2 Hz</button><button data-preset="summation">Build an AP</button><button data-preset="inhibition">Add inhibition</button></div><div class="rhythm-presets" aria-label="Population rhythm examples"><button data-rhythm="delta" aria-pressed="false">Delta <small>2 Hz</small></button><button data-rhythm="theta" aria-pressed="false">Theta <small>6 Hz</small></button><button data-rhythm="alpha" aria-pressed="false">Alpha <small>10 Hz</small></button><button data-rhythm="beta" aria-pressed="false">Beta <small>20 Hz</small></button></div><p id="rhythm-description" class="help">Band presets recruit a rhythmically driven population.</p></div>
+  <details id="advanced"><summary>Connection strength & biology</summary><div class="advanced-content"><div class="control"><label for="weightE">Excitatory strength <output id="weightE-value">9 nS</output></label><input id="weightE" type="range" min="0" max="25" step="0.5" value="9"></div><div class="control"><label for="weightI">Inhibitory strength <output id="weightI-value">16 nS</output></label><input id="weightI" type="range" min="0" max="35" step="0.5" value="16"></div><div class="control"><label for="reversalI">GABA reversal potential</label><select id="reversalI"><option value="-75">−75 mV · hyperpolarizing</option><option value="-65">−65 mV · shunting</option></select></div><p class="help">Changing inputs restarts the trial.</p></div></details>
+  <p class="field-scope">Fields: modeled synaptic currents + returns. Ca²⁺ and spike fields are omitted.</p>
+</div>
+<div id="network-controls" hidden>
+  <p class="network-intro">64 pyramidal cells + 16 interneurons exchange spikes. Fields represent a 2,048-pyramid cortical patch.</p>
+  <section class="network-input input-control"><h3><span class="input-dot exc">E</span> Background excitation</h3><div class="network-pair"><label for="net-inputsE">Axons / cell<input id="net-inputsE" type="number" min="0" max="1000" step="10" value="200"></label><label for="net-rateE">Hz / axon<input id="net-rateE" type="number" min="0" max="15" step="0.5" value="2"></label></div><p class="help" id="network-e-total"></p></section>
+  <section class="network-input input-control"><h3><span class="input-dot inh">I</span> Background inhibition</h3><div class="network-pair"><label for="net-inputsI">Axons / cell<input id="net-inputsI" type="number" min="0" max="500" step="10" value="50"></label><label for="net-rateI">Hz / axon<input id="net-rateI" type="number" min="0" max="30" step="0.5" value="5"></label></div><p class="help" id="network-i-total"></p></section>
+  <div class="control"><label for="net-coupling">Recurrent coupling <output id="net-coupling-value"></output></label><input id="net-coupling" type="range" min="0" max="2" step="0.1" value="1"></div>
+  <div class="control"><label for="net-inhibition">Inhibitory feedback <output id="net-inhibition-value"></output></label><input id="net-inhibition" type="range" min="0" max="2" step="0.1" value="1"></div>
+  <div class="control"><label for="net-recovery">Spike recovery <output id="net-recovery-value"></output></label><input id="net-recovery" type="range" min="10" max="500" step="10" value="70"></div>
+  <div class="presets network-presets"><p class="eyebrow">Try a comparison</p><div><button data-network="alpha" aria-pressed="true">Alpha-like</button><button data-network="uncoupled" aria-pressed="false">Uncoupled</button><button data-network="excitation" aria-pressed="false">More E drive</button><button data-network="inhibition" aria-pressed="false">More inhibition</button></div><button id="network-trial">New random trial ↻</button></div>
+  <p class="help network-result" id="network-result"></p><p class="field-scope">Timing emerges from feedback, inhibition and recovery. A teaching example of an alpha-like mechanism; not a fitted model of human alpha.</p>
+</div>
+</aside>
+</section></main>
+<dialog id="biology-dialog" aria-labelledby="biology-title"><div class="dialog-heading"><h2 id="biology-title">Biology & model</h2><button id="biology-close" autofocus>Close ×</button></div><div class="notes"><section class="network-notes"><h3>Population rhythms: what changes?</h3><p>The Population rhythms tab simulates 64 excitatory pyramidal cells and 16 inhibitory interneurons with sparse recurrent connections. Each cell receives independent Poisson background inputs: defaults are 200 excitatory axons at 2 Hz each and 50 inhibitory axons at 5 Hz each. These are per-axon mean rates, giving 400 and 250 incoming events/second per cell. They are not two axons firing hundreds of times per second. The simulated interneurons can fire faster than individual background axons; their rates are outcomes of the circuit.</p><p>Membrane threshold crossings produce spikes, which reach other cells after 3 ms. Pyramidal spiking adds a 50 pA adaptation current that decays over the selected recovery time (default 70 ms). Inhibition and recovery limit recruitment before the next population event. No periodic input-rate envelope, target-frequency clock, or sinusoid is injected. The default random trial produces an alpha-range peak, but changing drive, coupling, recovery or seed can change or abolish that rhythm. This is one simplified recurrent mechanism, not a validated or unique explanation of human alpha. Cortical and thalamic contributions depend on region and state.</p><p>The intracellular trace follows the first pyramidal cell; the two lower panels show actual spikes from all 64 excitatory and 16 inhibitory cells, one row per cell. Vertical clusters show shared timing; missing marks show skipped cycles. Cells differ in threshold, background strength and random input timing. The E and I cartoons and molecular insets remain in the Single-neuron circuit tab.</p><p>For responsive rendering, the field calculation samples 24 of the 64 pyramidal cells and gives each a weight of 2,048/24. Six drawn pyramids illustrate the patch. This representative scaling preserves the simulated temporal structure but does not simulate 2,048 independent neurons or their anatomical connectivity. Interneuron transmembrane fields, adaptation currents as separate spatial sources, spike fields and presynaptic Ca²⁺ fields are omitted. The local field and scalp signal both derive from the same modeled pyramidal synaptic currents and equal opposite returns.</p><h3>From cortical tissue to the scalp electrode</h3><p>The overview locates the enlarged cortical patch inside a schematic head. Pyramidal dendrites point toward the cortical surface and axons extend toward white matter; cell drawings and folds are illustrative. Electrode 3 touches the outside of the scalp. The head calculation uses four concentric spherical conductors: brain, CSF, skull and scalp. Outer radii are 78, 80, 86 and 92 mm, and conductivities are 0.3, 1.79, 0.01 and 0.43 S/m, respectively. Source somata lie near a 76 mm radius, with the same 0.2 mm per model-unit spacing used locally. These are chosen teaching parameters, not a reconstruction of a participant.</p><p>The scalp forward calculation expands each source/return pair into 100 spherical harmonics, enforcing continuous potential and normal current at each tissue boundary and zero normal current at the scalp surface. Scalp voltage is relative to the mean scalp potential; the local point probe uses the original homogeneous conductor and ideal distant reference. Both channels can be shown raw or with the same 0.5–40 Hz filter. Tissue conduction is instantaneous in this quasistatic approximation: skull and distance reduce and spatially spread the signal, without adding a slow traveling wave or arbitrary time delay. For this small patch the scalp amplitude is small; separately labeled scales make it visible without artificially boosting the calculated voltage.</p><p>The E/I source layout lumps return currents at somata; no realistic folded-cortex solution, active dendritic channels, NMDA/GABA-B receptors, synaptic plasticity, or thalamus is simulated. A clearer alpha-like trace does not establish a biologically unique generator.</p><ul><li><a href="https://pubmed.ncbi.nlm.nih.gov/21106811/" target="_blank" rel="noreferrer">Delgado et al. (2010): background synaptic conductances</a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/19755110/" target="_blank" rel="noreferrer">Lőrincz et al. (2009): phasic inhibition and alpha spike timing</a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/22084106/" target="_blank" rel="noreferrer">Haegens et al. (2011): alpha phase and neuronal firing</a></li><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6876194/" target="_blank" rel="noreferrer">Halgren et al. (2019): human cortical and thalamic alpha</a></li><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5651266/" target="_blank" rel="noreferrer">Næss et al. (2017): corrected four-sphere EEG model</a></li></ul></section><h3>Single-neuron circuit: reading the insets</h3><p>Na⁺ and K⁺ both carry positive charge. Near rest, Na⁺ enters because its concentration and electrical gradients both favor entry. K⁺ leaves because its outward concentration gradient outweighs its inward electrical pull. More positive charge enters than leaves through the excitatory channels, so their combined current depolarizes the dendrite. The two ion rows depict the same class of glutamate-gated pore. A negative outward current means positive charge moving inward, not negative ions entering.</p><p>At the default GABA reversal potential, Cl⁻ enters with negative charge. Conventional current points the opposite way. Positive extracellular voltage near a contact or the soma does not mean the cell interior is depolarizing.</p><h3>What is a return current?</h3><p>Imagine a complete electrical circuit: current enters one patch of membrane, spreads inside the cell, crosses other membrane regions, and returns through the surrounding fluid. This balancing flow is the return current. It includes membrane leak and capacitive charging. The drawing places the returns near the soma; real return currents are distributed.</p><div class="notes-grid"><div><h3>What is being modeled?</h3><p>The neuron-count control selects 1–4,096 pyramidal targets. At most 12 representative pyramids are drawn. In circuit mode, targets are identical and receive the same two input trains. In rhythm mode the two drawn input neurons represent excitatory and inhibitory input populations; their rate envelopes are coordinated, while individual spike timings differ. Target cells have no recurrent or ephaptic coupling. Their extracellular sources are summed; adding cells does not increase the membrane voltage of an individual target. In the synchronous circuit mode, the net dipole scales with count; electrode voltage also depends on location and need not scale identically.</p><p>A three-compartment conductance-based integrate-and-fire neuron: two passive dendritic regions are electrically coupled to a soma. Excitatory glutamatergic and inhibitory GABAergic contacts terminate on separate dendrites. Their reversal potentials and instantaneous local voltages determine current direction and magnitude. The branches are an illustrative pyramidal morphology; they are not a reconstructed cable tree.</p><p>The initial soma and dendrites rest at −65 mV. The axon-initial-segment threshold is represented by a somatic threshold of −50 mV. Crossing it triggers a displayed spike, reset, and 3 ms refractory interval. Leak restores voltage toward rest, while capacitance and dendritic coupling govern its time course. The spike shape is illustrative, not a simulation of individual voltage-gated sodium and potassium channels.</p><p>Each presynaptic spike reaches its terminal after 6 ms; transmitter release follows 1 ms later. The transmitter then takes an illustrative 0.6 ms to cross the cleft and bind. New synaptic conductance rises only after binding. When inputs overlap, channels opened by earlier releases can remain active while new transmitter is in transit. Calcium entry and vesicle fusion are shown schematically. The calcium-entry interval is 3 ms of biological time and takes 6 seconds of motion on screen in Auto playback (2,000× slower), plus any guided explanation pauses. Transmitter release begins 1 ms after calcium entry starts, so the animations overlap. Synaptic conductances rise and decay over milliseconds, representing channel activation and transmitter clearance. Ion dots indicate direction; their number and speed are illustrative, not measured flux. An illustrative current decomposition splits the excitatory conductance into illustrative Na⁺ and K⁺ components using reversal potentials of +60 and −90 mV and conductance fractions 0.6 and 0.4. This preserves the combined 0 mV reversal and calculated net synaptic current; it does not impose a fixed ion-exchange ratio.</p><h3>Biological time versus playback</h3><p>0.2 Hz really means one spike every 5 seconds of biological time. EPSPs are not stretched to last seconds in the model. Auto playback also holds biological time for 3 seconds at each new stage for the E and I inputs, and at the first output spike. Repeated stages continue without repeated holds. The checkbox disables these holds; Continue now skips a hold; Replay Ca²⁺ resets the stage holds. Auto playback slows the display near events so the causal chain can be seen; the displayed biological clock remains accurate. At equal rates, phase is the inhibitory train’s delay within the common cycle. With different rates, the two trains drift relative to each other.</p><p>Connection strengths are chosen to make summation visible. Each drawn contact represents an effective connection, potentially pooling several real contacts. The 40 Hz firing example is a result of these teaching parameters, not a universal threshold for pyramidal neurons.</p></div><div><h3>Reading the extracellular field</h3><p>Blue and coral show negative and positive extracellular potential relative to an ideal distant reference. The optional arrows show electric-field direction, −∇V. The heatmap is calculated from the synaptic transmembrane currents plus equal return currents lumped near the soma. Pale shading indicates voltage near zero; stronger shading indicates larger voltage magnitude. The color scale adjusts to population size and stays fixed during playback and zoom, so large populations retain visible gradients. Compare absolute amplitudes using the labeled recording plots. It is not membrane voltage, transmitter concentration, or a pile of net charge.</p><p>The underlying current and voltage calculations are linked, but the spatial field is a qualitative homogeneous-conductor approximation in arbitrary units. It does not solve the detailed membrane current distribution, presynaptic Ca²⁺ currents, fields of spikes, or head tissues. The recording channels use the same synaptic source currents with an explicitly scaled homogeneous conductor; they are model predictions, not fitted human EEG amplitudes. Ca²⁺ entry is inward positive current and does create a local extracellular sink; its absence from this map is a model omission.</p><h3>What is left out?</h3><p>Stochastic vesicle release and failures; short-term facilitation/depression; long-term plasticity; NMDA and GABA-B receptors; active dendritic spikes and backpropagation; adaptation; glial uptake dynamics; and changes in ion gradients. Fixed gradients and a leak reversal represent the resting state. Pumps maintain gradients over time; they do not directly generate each rapid action-potential upstroke or downstroke. These are useful extensions, but are not needed for this first demonstration of temporal summation and inhibition.</p><h3>Electrodes and signal display</h3><p>Electrode 1 reads the highlighted cell’s somatic membrane voltage in mV: inside minus just outside. Electrode 2 is an extracellular point probe near the excitatory dendrite, measured relative to an ideal distant zero reference.</p><p>For the extracellular recording, a drawing distance of 100 world units represents 0.2 mm. The conductor has conductivity 0.3 S/m; source currents are converted from pA to A and potentials from V to µV using the point-source Green’s function. The probe lies 0.05 mm out of the source plane, with a 0.02 mm regularization core. No amplifier, electrode impedance, noise, or tissue boundaries are modeled.</p><p>The two channels share a time axis but retain their own labeled vertical units and scales. Intracellular positive voltage is upward. The “− up” option reverses only the extracellular channel, as commonly displayed in EEG. “Fit visible” uses past visible data, not future events. EEG view applies a causal 0.5 Hz high-pass and two-stage 40 Hz low-pass to the extracellular channel; it is a teaching filter, not a particular clinical amplifier. The heatmap stays raw when the recorded field is filtered, so removing the DC baseline can change a trace’s sign relative to the map.</p><h3>How rhythm presets generate their signals</h3><p>Delta, theta, alpha, and beta presets recruit 4,096, 2,048, 2,048, and 1,024 pyramidal neurons, respectively. Their excitatory and inhibitory inputs are rate-modulated around 2, 6, 10, or 20 Hz. A small number of representative conductance-based neurons (up to 24) samples different spike phases and slightly different modulation phases; each represents an equal fraction of the population. The extracellular trace is calculated by summing their synaptic currents and return currents through the electrode model. No sine wave is added to the recording channels.</p><p>The driving rate envelopes include harmonics, mild frequency variability, and amplitude changes. Delta has broad asymmetric cycles; theta has uneven rounded cycles; alpha waxes and wanes with mild asymmetry; beta occurs in brief faster packets. These are selected examples, not fixed shapes that define a frequency band. Alpha is not necessarily the arch-shaped sensorimotor mu rhythm. The presets are externally driven population examples, not self-organizing thalamocortical or recurrent-network generators, and they do not imply a universal E:I ratio. Rate controls become peak input rates in rhythm mode. Selecting a preset shows a few seconds of already-simulated activity and uses real-time playback so the rhythm is immediately visible.</p><h3>Scientific foundations</h3><ul><li><a href="https://neuronaldynamics.epfl.ch/online/Ch13.S6.html" target="_blank" rel="noreferrer">Gerstner et al., Neuronal Dynamics: conductance-based input</a></li><li><a href="https://neuronaldynamics.epfl.ch/online/Ch3.S4.html" target="_blank" rel="noreferrer">Neuronal Dynamics: compartmental models</a></li><li><a href="https://www.ncbi.nlm.nih.gov/books/NBK11054/" target="_blank" rel="noreferrer">Purves et al.: concentration and electrical gradients</a></li><li><a href="https://www.ncbi.nlm.nih.gov/books/NBK11104/" target="_blank" rel="noreferrer">Purves et al.: summation of synaptic potentials</a></li><li><a href="https://www.ncbi.nlm.nih.gov/books/NBK11125/" target="_blank" rel="noreferrer">Purves et al.: calcium and transmitter secretion</a></li><li><a href="https://www.nature.com/articles/nrn3241" target="_blank" rel="noreferrer">Buzsáki et al.: origins of extracellular fields</a></li><li><a href="https://www.ncbi.nlm.nih.gov/books/NBK390343/" target="_blank" rel="noreferrer">American Epilepsy Society EEG atlas: normal rhythms</a></li><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12007518/" target="_blank" rel="noreferrer">Schaworonkow: alpha waveform shape and harmonics</a></li></ul></div></div></div></dialog>
+<noscript>This offline teaching tool needs JavaScript enabled.</noscript>
+<script>
+/* Conductance-based integrate-and-fire teaching circuit. Units: ms, mV, nS, pF, pA. */
+(function(root){
+'use strict';
+const PARAMS=Object.freeze({duration:10000,dt:.1,capacitance:120,leak:6,dendCap:60,dendLeak:3,axial:12,rest:-65,threshold:-50,reset:-68,refractory:3,eExc:0,eInh:-75,riseE:1,decayE:12,riseI:1.5,decayI:20,axonDelay:6,releaseDelay:1,bindingDelay:.6,firstSpike:350});
+const DEFAULTS=Object.freeze({rateE:.2,rateI:.2,phase:0,weightE:9,weightI:16,reversalI:-75});
+// An illustrative Na/K decomposition that exactly preserves the combined 0 mV reversal.
+const ION_REVERSALS=Object.freeze({na:60,k:-90});
+function excitatoryIonCurrents(s,p=PARAMS){const naFraction=(p.eExc-ION_REVERSALS.k)/(ION_REVERSALS.na-ION_REVERSALS.k),na=s.gE*naFraction*(s.dendE-ION_REVERSALS.na),k=s.gE*(1-naFraction)*(s.dendE-ION_REVERSALS.k);return{na,k,net:na+k};}
+function train(rate,phase=0,p=PARAMS){if(rate<=0)return [];const period=1000/rate,delay=((phase%360)+360)%360/360*period,events=[];for(let t=p.firstSpike+delay;t<=p.duration;t+=period)events.push(t);return events;}
+// Frequency bands are teaching examples, not universal waveform templates or E:I ratios.
+const RHYTHMS=Object.freeze({
+ delta:{hz:2,band:'0.5–4 Hz',name:'Delta',shape:'Broad, asymmetric slow waves',harmonic:.28,third:.10,phase:.65},
+ theta:{hz:6,band:'4–8 Hz',name:'Theta',shape:'Uneven, rounded cycles',harmonic:.20,third:.06,phase:.9},
+ alpha:{hz:10,band:'8–13 Hz',name:'Alpha',shape:'Waxing and waning, mildly asymmetric',harmonic:.14,third:.03,phase:.4},
+ beta:{hz:20,band:'13–30 Hz',name:'Beta',shape:'Brief packets of faster, asymmetric cycles',harmonic:.23,third:.07,phase:1.1}
+});
+function rhythmEnvelope(kind,t,phase=0){
+ const r=RHYTHMS[kind];if(!r)throw new RangeError('Unknown rhythm.');
+ const seconds=t/1000,angle=2*Math.PI*(r.hz*seconds+.035*Math.sin(2*Math.PI*.31*seconds))-phase*Math.PI/180;
+ const wave=(Math.cos(angle)+r.harmonic*Math.cos(2*angle+r.phase)+r.third*Math.cos(3*angle-.3))/(1+r.harmonic+r.third);
+ const envelope=kind==='alpha'?.48+.52*(.5+.5*Math.sin(2*Math.PI*.65*seconds)):
+  kind==='beta'?.18+.82*(.5+.5*Math.cos(2*Math.PI*1.1*seconds))**3:.8+.2*Math.cos(2*Math.PI*.27*seconds);
+ return Math.max(.04,Math.min(1,.52+.46*envelope*wave));
+}
+function rhythmicTrain(rate,kind,phase=0,p=PARAMS,initialPhase=0){
+ if(rate<=0)return[];const events=[];let accrued=initialPhase;
+ // Integrate an inhomogeneous rate: deterministic and reproducible, with a 100 Hz ceiling.
+ for(let t=p.firstSpike;t<=p.duration;t+=p.dt){accrued+=rate*rhythmEnvelope(kind,t-p.firstSpike,phase)*p.dt/1000;if(accrued>=1){events.push(Math.round(t/p.dt)*p.dt);accrued-=1;}}
+ return events;
+}
+function kernelNorm(rise,decay){const peak=Math.log(decay/rise)/(1/rise-1/decay);return Math.exp(-peak/decay)-Math.exp(-peak/rise);}
+function spikeShape(age){if(age<0||age>3)return null;if(age<.45)return -50+85*age/.45;if(age<1.8)return 35-105*(age-.45)/1.35;return -70+2*(age-1.8)/1.2;}
+function latest(events,t){let lo=0,hi=events.length;while(lo<hi){const m=(lo+hi)>>1;if(events[m]<=t)lo=m+1;else hi=m;}return lo?events[lo-1]:-Infinity;}
+function simulate(settings={},overrides={}){
+ const s={...DEFAULTS,...settings},p={...PARAMS,...overrides,eInh:s.reversalI};
+ if(!Number.isFinite(s.rateE)||!Number.isFinite(s.rateI)||s.rateE<0||s.rateI<0||s.rateE>100||s.rateI>100)throw new RangeError('Firing rates must be between 0 and 100 Hz.');
+ if(!Number.isFinite(s.phase)||!Number.isFinite(s.weightE)||!Number.isFinite(s.weightI)||s.weightE<0||s.weightI<0)throw new RangeError('Phase and conductances must be finite; conductances must be nonnegative.');
+ const spikesE=s.rhythm?rhythmicTrain(s.rateE,s.rhythm,s.rhythmShift||0,p,s.trainPhase||0):train(s.rateE,0,p),spikesI=s.rhythm?rhythmicTrain(s.rateI,s.rhythm,s.phase+(s.rhythmShift||0),p,((s.trainPhase||0)+.37)%1):train(s.rateI,s.phase,p),delay=p.axonDelay+p.releaseDelay;
+ const releasesE=spikesE.map(t=>t+delay).filter(t=>t<=p.duration),releasesI=spikesI.map(t=>t+delay).filter(t=>t<=p.duration);
+ const bindingsE=releasesE.map(t=>t+p.bindingDelay).filter(t=>t<=p.duration),bindingsI=releasesI.map(t=>t+p.bindingDelay).filter(t=>t<=p.duration);
+ const n=Math.round(p.duration/p.dt)+1,vm=new Float32Array(n),baseVm=new Float32Array(n),dendE=new Float32Array(n),dendI=new Float32Array(n),gE=new Float32Array(n),gI=new Float32Array(n),iE=new Float32Array(n),iI=new Float32Array(n),post=[];
+ const fEr=Math.exp(-p.dt/p.riseE),fEd=Math.exp(-p.dt/p.decayE),fIr=Math.exp(-p.dt/p.riseI),fId=Math.exp(-p.dt/p.decayI),nE=kernelNorm(p.riseE,p.decayE),nI=kernelNorm(p.riseI,p.decayI);
+ let er=0,ed=0,ir=0,id=0,ei=0,ii=0,v=p.rest,ve=p.rest,vi=p.rest,last=-Infinity;
+ for(let k=0;k<n;k++){
+  const t=k*p.dt;if(k){er*=fEr;ed*=fEd;ir*=fIr;id*=fId;}
+  while(ei<bindingsE.length&&bindingsE[ei]<=t+1e-8){er+=s.weightE/nE;ed+=s.weightE/nE;ei++;}
+  while(ii<bindingsI.length&&bindingsI[ii]<=t+1e-8){ir+=s.weightI/nI;id+=s.weightI/nI;ii++;}
+  const ge=Math.max(0,ed-er),gi=Math.max(0,id-ir);
+  if(k){
+   const dE=(-p.dendLeak*(ve-p.rest)-p.axial*(ve-v)-ge*(ve-p.eExc))/p.dendCap;
+   const dI=(-p.dendLeak*(vi-p.rest)-p.axial*(vi-v)-gi*(vi-p.eInh))/p.dendCap;
+   const dS=(-p.leak*(v-p.rest)+p.axial*(ve-v)+p.axial*(vi-v))/p.capacitance;
+   ve+=p.dt*dE;vi+=p.dt*dI;
+   if(t-last>=p.refractory){v+=p.dt*dS;if(v>=p.threshold){post.push(t);last=t;v=p.reset;}}
+   else v=p.reset;
+  }
+  dendE[k]=ve;dendI[k]=vi;
+  baseVm[k]=v;const drawn=spikeShape(t-last);vm[k]=drawn===null?v:drawn;
+  gE[k]=ge;gI[k]=gi;iE[k]=ge*(ve-p.eExc);iI[k]=gi*(vi-p.eInh);
+ }
+ return{settings:s,params:p,vm,baseVm,dendE,dendI,gE,gI,iE,iI,spikesE,spikesI,releasesE,releasesI,bindingsE,bindingsI,post};
+}
+function sample(sim,t){const k=Math.max(0,Math.min(sim.vm.length-1,Math.round(t/sim.params.dt)));return{t:k*sim.params.dt,vm:sim.vm[k],baseVm:sim.baseVm[k],dendE:sim.dendE[k],dendI:sim.dendI[k],gE:sim.gE[k],gI:sim.gI[k],iE:sim.iE[k],iI:sim.iI[k],lastE:latest(sim.spikesE,t),lastI:latest(sim.spikesI,t),releaseE:latest(sim.releasesE,t),releaseI:latest(sim.releasesI,t),lastPost:latest(sim.post,t),postCount:sim.post.filter(x=>x<=t).length};}
+// Equal return currents at the soma close each modeled synaptic current circuit.
+function sources(sample,geometry){const out=[];for(const [current,site]of [[sample.iE,geometry.e],[sample.iI,geometry.i]]){out.push({x:site.x,y:site.y,i:current/150});out.push({x:geometry.soma.x,y:geometry.soma.y,i:-current/150});}return out;}
+// Aligned, identical targets receive the same two input trains; no recurrent coupling.
+function populationSources(sample,geometry,count=1){if(!Number.isInteger(count)||count<1||count>12)throw new RangeError('Choose 1–12 pyramidal neurons.');const one=sources(sample,geometry),out=[];for(let cell=0;cell<count;cell++)for(const source of one)out.push({...source,x:source.x+cell});return out;}
+function dipoleMoment(sources){return sources.reduce((p,s)=>({x:p.x+s.i*s.x,y:p.y+s.i*s.y}),{x:0,y:0});}
+function potential(sources,x,y,core=.12){return sources.reduce((v,s)=>v+s.i/Math.sqrt((x-s.x)**2+(y-s.y)**2+core**2),0)/(4*Math.PI);}
+function field(sources,x,y,core=.12){return sources.reduce((v,s)=>{const dx=x-s.x,dy=y-s.y,r3=((dx*dx+dy*dy+core*core)**1.5);return{x:v.x+s.i*dx/r3/(4*Math.PI),y:v.y+s.i*dy/r3/(4*Math.PI)};},{x:0,y:0});}
+// SI-calibrated homogeneous-conductor teaching model, separate from heatmap color gain.
+// Geometry coordinates are 0.2 mm units; synaptic currents are pA; output is µV.
+const RECORDING=Object.freeze({mmPerUnit:.2,conductivity:.3,coreMm:.02});
+function electrodeGeometry(){return{intracellular:{x:5,y:4.2},point:{x:5.85,y:2.30,z:.25}};}
+function electrodeWeights(geometry,count=1,point){
+ if(!Number.isInteger(count)||count<1||count>12)throw new RangeError('Choose 1–12 pyramidal neurons.');
+ const weights={e:0,i:0},p=RECORDING;
+ for(let cell=0;cell<count;cell++)for(const [key,site]of [['e',geometry.e],['i',geometry.i]]){
+  const distance=site=>Math.sqrt(((point.x-site.x-cell)*p.mmPerUnit)**2+((point.y-site.y)*p.mmPerUnit)**2+((point.z||0)*p.mmPerUnit)**2+p.coreMm**2)*.001;
+  // pA × 10^-12 A/pA × 10^6 µV/V.
+  weights[key]+=(1/distance(site)-1/distance(geometry.soma))*1e-6/(4*Math.PI*p.conductivity);
+ }
+ return weights;
+}
+function filterField(data,dt,lowHz=.5,highHz=40){
+ // Causal first-order high-pass followed by two low-pass stages; applied to the extracellular channel.
+ const out=new Float32Array(data.length),seconds=dt/1000,highPass=1/(1+2*Math.PI*lowHz*seconds),lowPass=1-Math.exp(-2*Math.PI*highHz*seconds);
+ let hp=0,lp1=0,lp2=0,previous=data[0];
+ for(let k=0;k<data.length;k++){hp=highPass*(hp+data[k]-previous);previous=data[k];lp1+=lowPass*(hp-lp1);lp2+=lowPass*(lp1-lp2);out[k]=lp2;}return out;
+}
+function population(settings,count=1,firstSim=simulate(settings)){
+ if(!Number.isInteger(count)||count<1||count>4096)throw new RangeError('Choose 1–4096 pyramidal neurons.');
+ const drawn=Math.min(count,12),members=settings.rhythm?Math.min(count,24):drawn,groups=[];
+ for(let j=0;j<members;j++){
+  const member=j===0||!settings.rhythm?firstSim:simulate({...settings,trainPhase:(j*.61803398875)%1,rhythmShift:12*Math.sin(j*2.39996323)});
+  groups.push({sim:member,x:members===1?0:j*(drawn-1)/(members-1),weight:count/members});
+ }
+ return{count,drawn,groups,sim:firstSim};
+}
+function populationFieldSources(pop,t,geometry){
+ const out=[];for(const group of pop.groups){const k=Math.max(0,Math.min(group.sim.vm.length-1,Math.round(t/group.sim.params.dt)));
+  for(const [current,site]of [[group.sim.iE[k],geometry.e],[group.sim.iI[k],geometry.i]])out.push({x:site.x+group.x,y:site.y,i:current*group.weight/150},{x:geometry.soma.x+group.x,y:geometry.soma.y,i:-current*group.weight/150});
+ }return out;
+}
+function recordings(pop,geometry){
+ const sim=pop.sim,electrodes=electrodeGeometry(),point=new Float32Array(sim.vm.length);
+ for(const group of pop.groups){const sites=Object.fromEntries(Object.entries(geometry).map(([key,value])=>[key,{x:value.x+group.x,y:value.y}]));
+  const pointWeights=electrodeWeights(sites,1,electrodes.point);
+  for(let k=0;k<point.length;k++){point[k]+=group.weight*(pointWeights.e*group.sim.iE[k]+pointWeights.i*group.sim.iI[k]);}
+ }
+ return{electrodes,point,pointEEG:filterField(point,sim.params.dt)};
+}
+// Playback changes wall-clock pacing only. Sweep overlapping events so a Ca window
+// cannot be skipped or overridden by a simultaneous spike in another neuron.
+function playbackSchedule(sim){
+ const marks=[],active=new Map(),schedule=[];let id=0;
+ function window(start,end,speed,label,priority){const key=id++;marks.push({t:Math.max(0,start),key,start:true,speed,label,priority},{t:Math.min(sim.params.duration,end),key,start:false});}
+ for(const t of [...sim.spikesE,...sim.spikesI]){
+  const arrival=t+sim.params.axonDelay;
+  window(t-2,arrival,.002,'Incoming spike · 500× slower',3);
+  window(arrival,arrival+3,.0005,'Calcium entry · 2,000× slower · 1 ms takes 2 seconds',0);
+  window(arrival+3,arrival+6,.002,'Transmitter release & channel opening · 500× slower',1);
+  window(arrival+6,arrival+59,.08,'Postsynaptic integration · 12.5× slower',4);
+ }
+ for(const t of sim.post)window(t,t+4,.002,'Postsynaptic action potential · 500× slower',2);
+ marks.sort((a,b)=>a.t-b.t);schedule.push({t:0,speed:1,label:'Between events · real biological time'});
+ for(let j=0;j<marks.length;){const t=marks[j].t;while(j<marks.length&&marks[j].t===t){const m=marks[j++];if(m.start)active.set(m.key,m);else active.delete(m.key);}
+  let winner={speed:1,label:'Between events · real biological time',priority:99};for(const m of active.values())if(m.speed<winner.speed||(m.speed===winner.speed&&m.priority<winner.priority))winner=m;
+  const last=schedule[schedule.length-1];if(last.t===t)schedule.pop();else if(last.speed===winner.speed&&last.label===winner.label)continue;
+  schedule.push({t,speed:winner.speed,label:winner.label});
+ }
+ return schedule.filter(s=>s.t<=sim.params.duration);
+}
+function playbackAt(schedule,t){let lo=0,hi=schedule.length;while(lo<hi){const mid=(lo+hi)>>1;if(schedule[mid].t<=t)lo=mid+1;else hi=mid;}const k=Math.max(0,lo-1);return{...schedule[k],next:schedule[k+1]?.t??Infinity};}
+function advancePlayback(schedule,t,wallMs,duration=PARAMS.duration){let left=wallMs;while(left>1e-9&&t<duration){const stage=playbackAt(schedule,t),end=Math.min(stage.next,duration),needed=(end-t)/stage.speed;if(left>=needed){t=end;left-=needed;}else{t+=left*stage.speed;left=0;}}return Math.min(t,duration);}
+const api={PARAMS,DEFAULTS,RHYTHMS,rhythmEnvelope,rhythmicTrain,RECORDING,electrodeGeometry,electrodeWeights,filterField,population,populationFieldSources,recordings,ION_REVERSALS,excitatoryIonCurrents,train,kernelNorm,spikeShape,latest,simulate,sample,sources,populationSources,dipoleMoment,potential,field,playbackSchedule,playbackAt,advancePlayback};root.NeuronCircuit=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+/* Recurrent E/I teaching network. ms, mV, nS, pF, pA; seeded stochastic inputs. */
+(function(root){
+'use strict';
+const M=root.NeuronCircuit||(typeof require==='function'?require('./model.js'):null);
+const DEFAULTS=Object.freeze({rateE:2,rateI:5,inputsE:200,inputsI:50,coupling:1,inhibition:1,recovery:70,seed:342});
+const CONFIG=Object.freeze({nE:64,nI:16,stored:24,dt:.1,duration:10000,backgroundE:.95,backgroundI:1,interneuronDrive:.65,connectionProbability:.3,ee:2,ei:2,ie:7,ii:1,adaptationStep:50,delay:3,decayI:10});
+function random(seed){return()=>{seed|=0;seed=seed+0x6d2b79f5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function simulate(options={},overrides={}){
+ const s={...DEFAULTS,...options},cfg={...CONFIG,...overrides},p={...M.PARAMS,dt:cfg.dt,duration:cfg.duration,decayI:cfg.decayI};
+ for(const [key,min,max]of [['rateE',0,15],['rateI',0,30],['inputsE',0,1000],['inputsI',0,500],['coupling',0,2],['inhibition',0,2],['recovery',10,500]])if(!Number.isFinite(s[key])||s[key]<min||s[key]>max)throw new RangeError('Invalid network '+key);
+ if(!Number.isInteger(s.seed))throw new RangeError('Seed must be an integer.');
+ const rng=random(s.seed),N=cfg.nE+cfg.nI,n=Math.round(p.duration/p.dt)+1,interval=rate=>rate>0?-Math.log(1-rng())*1000/rate:Infinity;
+ const cells=Array.from({length:N},(_,j)=>({v:-65+rng()*10,ve:-65,vi:-65,er:0,ed:0,ir:0,id:0,a:0,ref:0,last:-Infinity,post:[],bias:.85+.3*rng(),threshold:-50+(rng()-.5)*2,nextE:interval(s.rateE*s.inputsE),nextI:interval(s.rateI*s.inputsI),receivedE:0,receivedI:0}));
+ const targets=cells.map((c,j)=>cells.flatMap((d,k)=>j!==k&&rng()<cfg.connectionProbability?[{k,weight:s.coupling*(j<cfg.nE?(k<cfg.nE?cfg.ee:cfg.ei):(k<cfg.nE?cfg.ie:cfg.ii)*s.inhibition)}]:[]));
+ const stored=Math.min(cfg.stored,cfg.nE),indices=Array.from({length:stored},(_,j)=>Math.round(j*(cfg.nE-1)/Math.max(1,stored-1))),byIndex=new Map(),groups=[];
+ for(const [j,index]of indices.entries()){
+  const member={settings:{...s,weightE:cfg.backgroundE,weightI:cfg.backgroundI},params:{...p,threshold:cells[index].threshold},spikesE:[],spikesI:[],releasesE:[],releasesI:[],bindingsE:[],bindingsI:[],post:cells[index].post};
+  for(const key of ['vm','baseVm','dendE','dendI','gE','gI','iE','iI'])member[key]=new Float32Array(n);
+  byIndex.set(index,member);groups.push({sim:member,x:stored===1?0:j*5/(stored-1),weight:2048/stored});
+ }
+ const er=Math.exp(-p.dt/p.riseE),ed=Math.exp(-p.dt/p.decayE),ir=Math.exp(-p.dt/p.riseI),id=Math.exp(-p.dt/p.decayI),af=Math.exp(-p.dt/s.recovery),normE=M.kernelNorm(p.riseE,p.decayE),normI=M.kernelNorm(p.riseI,p.decayI),delay=Math.max(1,Math.round(cfg.delay/p.dt)),queue=Array.from({length:delay+1},()=>[]);
+ const meanE=new Float32Array(n),meanI=new Float32Array(n);
+ for(let k=0;k<n;k++){
+  const t=k*p.dt,slot=k%queue.length;
+  for(const ev of queue[slot]){const c=cells[ev.k];if(ev.e){c.er+=ev.w/normE;c.ed+=ev.w/normE;}else{c.ir+=ev.w/normI;c.id+=ev.w/normI;}}queue[slot]=[];
+  let sumE=0,sumI=0;
+  for(let j=0;j<N;j++){
+   const c=cells[j],isE=j<cfg.nE;c.er*=er;c.ed*=ed;c.ir*=ir;c.id*=id;c.a*=af;
+   // Superposition of independent Poisson axons: exact aggregate event train.
+   // Rates here are per axon; no periodic envelope or injected field waveform.
+   while(c.nextE<=t){const w=cfg.backgroundE*c.bias*(isE?1:cfg.interneuronDrive)/normE;c.er+=w;c.ed+=w;c.receivedE++;c.nextE+=interval(s.rateE*s.inputsE);}
+   while(c.nextI<=t){const w=cfg.backgroundI/normI;c.ir+=w;c.id+=w;c.receivedI++;c.nextI+=interval(s.rateI*s.inputsI);}
+   const ge=Math.max(0,c.ed-c.er),gi=Math.max(0,c.id-c.ir);
+   const de=(-p.dendLeak*(c.ve-p.rest)-p.axial*(c.ve-c.v)-ge*(c.ve-p.eExc))/p.dendCap;
+   const di=(-p.dendLeak*(c.vi-p.rest)-p.axial*(c.vi-c.v)-gi*(c.vi-p.eInh))/p.dendCap;
+   const ds=(-p.leak*(c.v-p.rest)+p.axial*(c.ve-c.v)+p.axial*(c.vi-c.v)-c.a)/(isE?p.capacitance:60);
+   if(k){c.ve+=p.dt*de;c.vi+=p.dt*di;if(t>=c.ref)c.v+=p.dt*ds;else c.v=p.reset;
+    if(c.v>=c.threshold&&t>=c.ref){c.v=p.reset;c.ref=t+(isE?3:2);c.last=t;c.post.push(t);if(isE)c.a+=cfg.adaptationStep;
+     for(const edge of targets[j])queue[(k+delay)%queue.length].push({k:edge.k,w:edge.weight,e:isE});
+    }
+   }
+   if(isE){sumE+=ge;sumI+=gi;}
+   const member=byIndex.get(j);if(member){member.baseVm[k]=c.v;const shape=M.spikeShape(t-c.last);member.vm[k]=shape===null?c.v:shape;member.dendE[k]=c.ve;member.dendI[k]=c.vi;member.gE[k]=ge;member.gI[k]=gi;member.iE[k]=ge*(c.ve-p.eExc);member.iI[k]=gi*(c.vi-p.eInh);}
+  }
+  meanE[k]=sumE/cfg.nE;meanI[k]=sumI/cfg.nE;
+ }
+ return{count:2048,drawn:6,groups,sim:groups[0].sim,settings:s,config:cfg,meanE,meanI,excitatory:cells.slice(0,cfg.nE).map(c=>c.post),inhibitory:cells.slice(cfg.nE).map(c=>c.post),inputCounts:cells.slice(0,cfg.nE).map(c=>({e:c.receivedE,i:c.receivedI})),thresholds:cells.map(c=>c.threshold)};
+}
+// Concentric brain/CSF/skull/scalp conductor. Radii in mm, conductivity in S/m.
+// Each spherical harmonic obeys continuity of potential and normal current,
+// and zero current through the outer scalp surface. l=0 cancels for source pairs.
+const HEAD=Object.freeze({radii:[78,80,86,92],conductivity:[.3,1.79,.01,.43],somaRadius:76,terms:100});
+function shellTransfer(head=HEAD){
+ const out=[0],R=head.radii.at(-1);
+ for(let l=1;l<=head.terms;l++){
+  let a=1,b=l/(l+1);
+  for(let j=head.radii.length-2;j>=0;j--){const r=head.radii[j]/R,u=a*r**l,w=b*r**(-l-1),v=u+w,jr=head.conductivity[j+1]*(l*u-(l+1)*w),uin=(jr/head.conductivity[j]+(l+1)*v)/(2*l+1),win=(l*v-jr/head.conductivity[j])/(2*l+1);a=uin/r**l;b=win*r**(l+1);}
+  out.push((1+l/(l+1))/b);
+ }return out;
+}
+function scalpSourceWeight(source,head=HEAD,coeff=shellTransfer(head),angle=0){
+ const R=head.radii.at(-1),r=Math.hypot(source.x,source.z),rho=r/R,cos=r?Math.max(-1,Math.min(1,(source.x*Math.sin(angle)+source.z*Math.cos(angle))/r)):1;
+ if(r>=head.radii[0])throw new RangeError('Source must be inside the brain shell.');
+ let p0=1,p1=cos,power=rho,total=0;
+ for(let l=1;l<=head.terms;l++){const pl=l===1?p1:((2*l-1)*cos*p1-(l-1)*p0)/l;if(l>1){p0=p1;p1=pl;}total+=coeff[l]*power*pl;power*=rho;}
+ return total*1e-6/(4*Math.PI*head.conductivity[0]*R*.001); // µV / pA; mean scalp reference
+}
+function scalpRecordings(pop,geometry,head=HEAD){
+ const coeff=shellTransfer(head),scalp=new Float32Array(pop.sim.vm.length),weights=[];
+ for(const group of pop.groups){const site=key=>({x:(geometry[key].x+group.x-geometry.soma.x-2.5)*M.RECORDING.mmPerUnit,z:head.somaRadius-(geometry[key].y-geometry.soma.y)*M.RECORDING.mmPerUnit}),ret=scalpSourceWeight(site('soma'),head,coeff),e=scalpSourceWeight(site('e'),head,coeff)-ret,i=scalpSourceWeight(site('i'),head,coeff)-ret;weights.push({e,i});
+  for(let k=0;k<scalp.length;k++)scalp[k]+=group.weight*(e*group.sim.iE[k]+i*group.sim.iI[k]);
+ }return{scalp,scalpEEG:M.filterField(scalp,pop.sim.params.dt),weights};
+}
+function rate(trains,start,end){return end>start?trains.reduce((sum,events)=>sum+events.filter(t=>t>=start&&t<=end).length,0)/trains.length*1000/(end-start):0;}
+function spectrum(data,dt,start=2000,end=(data.length-1)*dt){
+ const stride=Math.max(1,Math.round(1/dt)),a=Math.max(0,Math.ceil(start/dt)),b=Math.min(data.length-1,Math.floor(end/dt));let sum=0,n=0;for(let k=a;k<=b;k+=stride){sum+=data[k];n++;}const mean=sum/Math.max(1,n),powers=[];
+ for(let hz=1;hz<=30;hz+=.25){let re=0,im=0;for(let k=a;k<=b;k+=stride){const taper=.5-.5*Math.cos(2*Math.PI*(k-a)/Math.max(1,b-a)),value=(data[k]-mean)*taper,phase=2*Math.PI*hz*k*dt/1000;re+=value*Math.cos(phase);im+=value*Math.sin(phase);}powers.push({hz,power:re*re+im*im});}
+ const best=powers.reduce((best,p)=>p.power>best.power?p:best,{hz:0,power:0});return{...best,prominence:best.power/Math.max(1e-20,powers.reduce((sum,p)=>sum+p.power,0)/powers.length)};
+}
+const api={DEFAULTS,CONFIG,HEAD,random,simulate,shellTransfer,scalpSourceWeight,scalpRecordings,rate,spectrum};root.NeuronNetwork=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+/* All panels share one biological clock and the same precomputed circuit. */
+(function(){
+'use strict';
+const M=window.NeuronCircuit,N=window.NeuronNetwork,$=id=>document.getElementById(id);
+const C={ink:'#244047',muted:'#63777b',teal:'#287d70',gold:'#b88c15',purple:'#805fa2',blue:'#287eb4',coral:'#c65d4e',paper:'#f3f6ef'};
+let mode='circuit',networkSettings={...N.DEFAULTS},networkPreset='alpha',modeCache={};
+let settings={...M.DEFAULTS},sim=M.simulate(settings),time=320,running=false,lastFrame=0;
+let neuronCount=1,camera={x:500,y:330,z:1},drag=null,view='circuit',allEvents=[],playbackPlan=[],fieldKernel=null;
+let guideEvents=[],guideSeen=new Set(),guideHold=null,guideElapsed=0;
+let sceneArea={x:0,y:0,w:1,h:1};
+const geometry={e:{x:4.31,y:2.30},i:{x:6.37,y:2.96},soma:{x:5,y:4.20}};
+let population=M.population(settings,neuronCount,sim),recording=M.recordings(population,geometry),modelRevision=0;
+const cvs=['scene','synapse-e','synapse-i','voltage'].map($),dims=new Map();
+const fieldCanvas=document.createElement('canvas');fieldCanvas.width=200;fieldCanvas.height=128;const fc=fieldCanvas.getContext('2d');
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,f)=>a+(b-a)*f;
+function context(canvas){const d=dims.get(canvas),ctx=canvas.getContext('2d');ctx.setTransform(d.dpr,0,0,d.dpr,0,0);ctx.clearRect(0,0,d.w,d.h);return{ctx,...d};}
+function resize(){for(const canvas of cvs){const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);const width=Math.round(r.width*dpr),height=Math.round(r.height*dpr);if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;dims.set(canvas,{w:r.width,h:r.height,dpr});}
+ const sceneRect=$('scene').getBoundingClientRect(),insets=document.querySelector('.synapses').getBoundingClientRect(),plots=document.querySelector('.recordings-panel').getBoundingClientRect();
+ const available=matchMedia('(max-width:600px)').matches?sceneRect.width:plots.left-sceneRect.left-10,anatomy=mode==='population'?Math.min(176,available*.29):0;
+ sceneArea={x:anatomy,y:34,w:available-anatomy,h:Math.max(22,insets.top-sceneRect.top-65)};
+ if(view==='circuit')fitCircuit();render();}
+function line(ctx,points,color,width=1){ctx.beginPath();ctx.moveTo(...points[0]);for(const p of points.slice(1))ctx.lineTo(...p);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+function circle(ctx,x,y,r,fill,stroke){ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
+function label(ctx,text,x,y,color=C.ink,size=12,align='left'){ctx.fillStyle=color;ctx.font=`${size}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(text,x,y);}
+function arrow(ctx,x1,y1,x2,y2,color,width=1.4){line(ctx,[[x1,y1],[x2,y2]],color,width);const a=Math.atan2(y2-y1,x2-x1);line(ctx,[[x2-5*Math.cos(a-.55),y2-5*Math.sin(a-.55)],[x2,y2],[x2-5*Math.cos(a+.55),y2-5*Math.sin(a+.55)]],color,width);}
+function pathPoint(points,f){const lengths=[],total=points.slice(1).reduce((sum,p,i)=>{const len=Math.hypot(p[0]-points[i][0],p[1]-points[i][1]);lengths.push(len);return sum+len;},0);let d=clamp(f,0,1)*total;for(let i=0;i<lengths.length;i++){if(d<=lengths[i])return[lerp(points[i][0],points[i+1][0],d/lengths[i]),lerp(points[i][1],points[i+1][1],d/lengths[i])];d-=lengths[i];}return points.at(-1);}
+function curved(ctx,points,color,width){ctx.beginPath();ctx.moveTo(...points[0]);for(let i=1;i<points.length-1;i++){const p=points[i],q=points[i+1];ctx.quadraticCurveTo(p[0],p[1],(p[0]+q[0])/2,(p[1]+q[1])/2);}ctx.lineTo(...points.at(-1));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+// Branches taper at bifurcations; all positions are drawn in the same world coordinates.
+const branches=[
+ {w:13,p:[[500,396],[496,337],[497,269],[500,196],[507,125]]},
+ {w:8,p:[[507,125],[505,97],[487,64],[473,42]]},
+ {w:5,p:[[501,167],[543,128],[570,91],[579,51]]},
+ {w:4,p:[[505,104],[453,108],[415,81],[383,62]]},
+ {w:3,p:[[488,68],[454,58],[428,35]]},
+ {w:2,p:[[455,58],[433,64],[411,54]]},
+ {w:3,p:[[487,64],[499,42],[493,24]]},
+ {w:2,p:[[472,42],[459,23],[440,16]]},
+ {w:2,p:[[543,128],[555,154],[592,156],[625,147]]},
+ {w:3,p:[[565,98],[612,80],[644,49],[663,40]]},
+ {w:2,p:[[616,78],[648,84],[682,71]]},
+ {w:2,p:[[578,58],[611,40],[618,22]]},
+ {w:2,p:[[419,83],[399,110],[364,119],[339,107]]},
+ {w:2,p:[[452,108],[434,131],[404,144]]},
+ {w:5,p:[[497,261],[466,243],[441,224],[414,196],[374,172]]},
+ {w:3,p:[[442,225],[403,232],[365,216],[340,219]]},
+ {w:2,p:[[416,198],[425,174],[410,148]]},
+ {w:2,p:[[375,173],[351,153],[332,146]]},
+ {w:4,p:[[497,312],[462,304],[434,285],[394,277]]},
+ {w:2,p:[[436,287],[421,314],[386,328]]},
+ {w:2,p:[[397,278],[374,257],[348,250]]},
+ {w:5,p:[[498,348],[532,327],[559,310],[602,301],[639,296],[678,280],[695,263]]},
+ {w:3,p:[[559,311],[565,278],[594,251],[618,242]]},
+ {w:2,p:[[591,253],[582,229],[594,210]]},
+ {w:2,p:[[641,295],[661,322],[688,334]]},
+ {w:4,p:[[501,214],[535,195],[575,185],[596,170]]},
+ {w:2,p:[[549,191],[557,170],[550,151]]},
+ {w:6,p:[[483,432],[444,442],[407,466],[370,474],[345,469]]},
+ {w:4,p:[[446,442],[420,419],[391,407],[362,412]]},
+ {w:2,p:[[394,408],[378,384],[355,374]]},
+ {w:2,p:[[407,465],[397,496],[371,516]]},
+ {w:2,p:[[376,475],[355,495],[328,497]]},
+ {w:5,p:[[486,441],[462,469],[443,508],[418,539]]},
+ {w:2,p:[[444,506],[454,533],[448,552]]},
+ {w:5,p:[[518,431],[553,443],[590,467],[625,481],[654,477]]},
+ {w:3,p:[[557,446],[593,436],[622,422],[649,428]]},
+ {w:2,p:[[622,423],[634,399],[660,386]]},
+ {w:2,p:[[592,468],[604,501],[630,518]]},
+ {w:5,p:[[518,440],[537,475],[553,518],[577,547]]},
+ {w:2,p:[[551,514],[539,538],[541,555]]}
+];
+const axonE=[[175,211],[189,242],[219,264],[270,272],[321,257],[372,232],[403,229],[419,228]];
+const axonI=[[846,132],[850,170],[813,210],[763,255],[717,284],[674,294],[648,297]];
+const axonPost=[[502,444],[501,467],[487,495],[501,523],[520,552],[517,583],[529,608]];
+function glow(ctx,x,y,r,color){const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,color+'a0');g.addColorStop(1,color+'00');circle(ctx,x,y,r,g);}
+function drawPyramid(ctx,s){
+ const color='#638e7d',edge='#3d6f60';
+ for(const b of branches){curved(ctx,b.p,edge,b.w+2);curved(ctx,b.p,color,b.w);}
+ // Small spines are placed along the thinner dendritic branches.
+ branches.slice(3).forEach((b,k)=>{for(let n=1;n<=4;n++){const p=pathPoint(b.p,n/5),q=pathPoint(b.p,Math.min(.99,n/5+.035)),a=Math.atan2(q[1]-p[1],q[0]-p[0])+(k%2?1:-1)*Math.PI/2;const tip=[p[0]+Math.cos(a)*6,p[1]+Math.sin(a)*6];line(ctx,[p,tip],color,1.5);circle(ctx,...tip,1.6,color);}});
+ curved(ctx,axonPost,edge,4);curved(ctx,[[505,529],[544,537],[569,561]],edge,1.6);
+ ctx.beginPath();ctx.moveTo(498,381);ctx.bezierCurveTo(491,402,474,421,470,437);ctx.bezierCurveTo(467,450,488,456,501,451);ctx.bezierCurveTo(519,457,536,447,527,433);ctx.bezierCurveTo(514,414,505,401,503,383);ctx.closePath();ctx.fillStyle='#83a796';ctx.fill();ctx.strokeStyle=edge;ctx.lineWidth=2;ctx.stroke();circle(ctx,500,427,10,'#b7caba','#71927e');circle(ctx,503,427,3,'#8fa68f');
+ const dep=clamp((s.baseVm+65)/15,0,1);if(dep>0){ctx.save();ctx.globalAlpha=dep;glow(ctx,500,420,30,C.gold);ctx.restore();}
+ for(const [x,y,g,color]of [[431,230,s.gE,C.gold],[637,296,s.gI,C.purple]]){line(ctx,[[x,y],[x+5,y-3]],edge,2);circle(ctx,x,y,5,color,edge);if(g>.1)glow(ctx,x,y,15+Math.min(g,20),color);}
+}
+function drawPre(ctx,kind,s){
+ ctx.save();if(kind==='I')ctx.translate((population.drawn-1)*100,0);
+ const isE=kind==='E',x=isE?175:860,y=isE?195:119,col=isE?C.gold:C.purple,age=time-(isE?s.lastE:s.lastI),path=isE?axonE:axonI;
+ const twigs=isE?[[[174,183],[164,146],[141,116],[125,97]],[[164,148],[179,122],[197,101]],[[154,132],[116,135],[93,115]],[[175,183],[210,156],[235,132]],[[208,158],[231,174],[258,171]],[[175,185],[140,167],[103,166]],[[141,117],[151,92],[147,74]],[[232,135],[259,127],[278,132]]]:[[[830,306],[809,278],[783,263],[770,243]],[[831,304],[843,270],[866,247]],[[841,275],[829,254],[833,230]],[[841,314],[875,298],[906,286]],[[879,297],[881,272],[897,258]],[[842,327],[873,343],[903,344],[925,328]],[[829,333],[842,365],[866,382]],[[820,314],[783,312],[756,296]],[[809,282],[779,288],[746,277]]];
+ for(const p of twigs)curved(ctx,isE?p:p.map(([px,py])=>[px+30,py-200]),col,2.5);curved(ctx,path,col,3);
+ if(isE){ctx.beginPath();ctx.moveTo(x,y-22);ctx.quadraticCurveTo(x-10,y-2,x-17,y+12);ctx.quadraticCurveTo(x-4,y+20,x+18,y+13);ctx.quadraticCurveTo(x+8,y-5,x,y-22);ctx.fillStyle='#d8be73';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();}else circle(ctx,x,y,16,'#c1afd2',col);
+ circle(ctx,x,y+3,6,isE?'#efe0ad':'#e1d6eb');
+ const end=path.at(-1);circle(ctx,...end,7,isE?'#d9b94b':'#a489ba',col);
+ if(age>=0&&age<=M.PARAMS.axonDelay){const p=pathPoint(path,age/M.PARAMS.axonDelay);glow(ctx,...p,18,col);circle(ctx,...p,5,'#fff',col);}
+ if(age>=0&&age<2){glow(ctx,x,y,27,col);const p=[[x-22,y-29],[x-15,y-29],[x-12,y-45],[x-7,y-21],[x-3,y-29],[x+19,y-29]];line(ctx,p,col,2);}
+ const released=time-(isE?s.releaseE:s.releaseI);
+ if(released>=0&&released<8){for(let j=0;j<7;j++){const f=clamp(released/sim.params.bindingDelay-j*.07,0,1),target=isE?[431,230]:[637,296];circle(ctx,lerp(end[0],target[0],f)+(j%3-1)*2,lerp(end[1],target[1],f)+(j-3)*2,1.7,col);}}
+ ctx.restore();
+}
+// Keep the complete circuit in the unobscured part of the image, beside the live insets.
+function worldWidth(){const span=(population.drawn-1)*100;return (mode==='population'?1040:1000)+span;}
+function baseScale(){return Math.min((sceneArea.w-20)/1000,sceneArea.h/680);}
+function fitCircuit(){const width=worldWidth(),scale=Math.min((sceneArea.w-20)/width,sceneArea.h/680);camera={x:width/2,y:330,z:scale/baseScale()};}
+function cameraTransform(){const scale=baseScale()*camera.z,cx=sceneArea.x+sceneArea.w/2,cy=sceneArea.y+sceneArea.h/2;return{scale,cx,cy,tx:cx-camera.x*scale,ty:cy-camera.y*scale};}
+function paintField(ctx,w,h,tr,sources){
+ if(!$('field').checked&&!$('arrows').checked)return;
+ const fw=fieldCanvas.width,fh=fieldCanvas.height;
+ if($('field').checked){const key=[w,h,tr.tx,tr.ty,tr.scale,modelRevision].join(':');
+  if(!fieldKernel||fieldKernel.key!==key){const kernels=[];for(const group of population.groups){const e=new Float32Array(fw*fh),i=new Float32Array(fw*fh),geom=Object.fromEntries(Object.entries(geometry).map(([k,v])=>[k,{x:v.x+group.x,y:v.y}])),se=M.sources({iE:group.weight,iI:0},geom),si=M.sources({iE:0,iI:group.weight},geom);
+   for(let iy=0;iy<fh;iy++)for(let ix=0;ix<fw;ix++){const x=((ix+.5)*w/fw-tr.tx)/tr.scale/100,y=((iy+.5)*h/fh-tr.ty)/tr.scale/100,k=iy*fw+ix;e[k]=M.potential(se,x,y);i[k]=M.potential(si,x,y);}kernels.push({e,i});}fieldKernel={key,kernels};}
+  // Keep a fixed exposure throughout playback and zoom. Expanded populations need
+  // more color headroom; otherwise almost every pixel saturates into two flat colors.
+  // This affects the qualitative map only, never the recorded voltages.
+  const colorScale=.35+.12*(population.count/population.drawn-1);
+  const k=Math.min(sim.vm.length-1,Math.round(time/sim.params.dt)),img=fc.createImageData(fw,fh),amps=population.groups.map(group=>[group.sim.iE[k],group.sim.iI[k]]);
+  for(let n=0;n<fw*fh;n++){let v=0;for(let j=0;j<amps.length;j++)v+=amps[j][0]*fieldKernel.kernels[j].e[n]+amps[j][1]*fieldKernel.kernels[j].i[n];const a=.62*(-Math.expm1(-.9*Math.abs(v)/colorScale)),idx=n*4,rgb=v<0?[40,126,180]:[198,93,78];img.data[idx]=rgb[0];img.data[idx+1]=rgb[1];img.data[idx+2]=rgb[2];img.data[idx+3]=Math.round(a*255);}fc.putImageData(img,0,0);ctx.drawImage(fieldCanvas,0,0,w,h);}
+ if($('arrows').checked){for(let y=24;y<sceneArea.y+sceneArea.h;y+=34)for(let x=24;x<sceneArea.w-10;x+=34){const v=M.field(sources,(x-tr.tx)/tr.scale/100,(y-tr.ty)/tr.scale/100),mag=Math.hypot(v.x,v.y);if(mag<.004)continue;const len=clamp(mag*90,5,19),dx=v.x/mag*len/2,dy=v.y/mag*len/2;ctx.globalAlpha=clamp(mag*9,.15,.65);arrow(ctx,x-dx,y-dy,x+dx,y+dy,C.ink,1);}ctx.globalAlpha=1;}
+}
+function extraConnections(ctx,s){
+ const span=(population.drawn-1)*100;
+ for(const kind of ['E','I'])for(let cell=0;cell<population.drawn;cell++){
+  if((kind==='E'&&cell===0)||(kind==='I'&&cell===population.drawn-1))continue;
+  const dx=cell*100,isE=kind==='E',col=isE?C.gold:C.purple;
+  const p=isE?[[219,264],[270,272],[300+dx,285],[372+dx,232],[403+dx,229],[419+dx,228]]:[[850+span,170],[813+span,210],[763+(span+dx)/2,255],[687+dx,323],[662+dx,300],[648+dx,297]];
+  ctx.save();ctx.globalAlpha=.55;curved(ctx,p,col,1.5);circle(ctx,...p.at(-1),5,col);ctx.restore();
+  const age=time-(isE?s.lastE:s.lastI);if(age>=0&&age<6){const point=pathPoint(p,age/6);circle(ctx,...point,3,'#fff',col);}
+  const released=time-(isE?s.releaseE:s.releaseI);if(released>=0&&released<3){const end=p.at(-1),target=isE?[431+dx,230]:[637+dx,296];for(let j=0;j<3;j++){const f=clamp(released/sim.params.bindingDelay-j*.07,0,1);circle(ctx,lerp(end[0],target[0],f),lerp(end[1],target[1],f)+j*2-2,1.5,col);}}
+ }
+}
+function drawElectrodes(ctx,tr){
+ ctx.save();ctx.translate(tr.tx,tr.ty);ctx.scale(tr.scale,tr.scale);
+ // Glass pipette crosses the soma membrane; point probe stops outside the dendrite.
+ line(ctx,[[345,560],[377,527],[500,420]],'#ffffff',8);line(ctx,[[345,560],[377,527],[500,420]],C.teal,2.5);circle(ctx,500,420,5,'#fff',C.teal);
+ line(ctx,[[653,116],[621,160],[585,230]],'#ffffff',8);line(ctx,[[653,116],[621,160],[585,230]],C.blue,2.5);circle(ctx,585,230,5,'#fff',C.blue);ctx.restore();
+ for(const [n,x,y,col]of [[1,346,558,C.teal],[2,655,115,C.blue]]){const px=x*tr.scale+tr.tx,py=y*tr.scale+tr.ty;circle(ctx,px,py,8,col);label(ctx,String(n),px,py,'#fff',10,'center');}
+}
+function scene(s){const{ctx,w,h}=context($('scene')),tr=cameraTransform(w,h),span=(population.drawn-1)*100,sources=M.populationFieldSources(population,time,geometry);ctx.fillStyle=C.paper;ctx.fillRect(0,0,w,h);paintField(ctx,w,h,tr,sources);ctx.save();ctx.translate(tr.tx,tr.ty);ctx.scale(tr.scale,tr.scale);
+ for(let cell=population.drawn-1;cell>=0;cell--){const group=population.groups[Math.min(population.groups.length-1,Math.round(cell*(population.groups.length-1)/Math.max(1,population.drawn-1)))],member=cell===0?s:M.sample(group.sim,time);ctx.save();ctx.translate(cell*100,0);ctx.globalAlpha=cell===0?1:.46;drawPyramid(ctx,member);const age=time-member.lastPost;if(age>=0&&age<=6){const p=pathPoint(axonPost,age/6);glow(ctx,...p,24,C.teal);circle(ctx,...p,5,'#fff',C.teal);}if(age>=0&&age<3)glow(ctx,500,420,43,C.gold);if(population.drawn>1){circle(ctx,500,427,10,cell===0?'#fff':'#dae7da');label(ctx,String(cell+1),500,428,cell===0?C.teal:C.muted,11,'center');}ctx.restore();}
+ if(mode==='population')drawNetworkInterneurons(ctx);
+ if(mode!=='population'){extraConnections(ctx,s);drawPre(ctx,'E',s);drawPre(ctx,'I',s);}ctx.restore();drawElectrodes(ctx,tr);if(mode==='population')drawAnatomy(ctx,tr);
+ function tag(text,x,y,color=C.ink,size=10){const px=x*tr.scale+tr.tx,py=y*tr.scale+tr.ty;if(px>sceneArea.x+6&&px<sceneArea.x+sceneArea.w-6&&py>sceneArea.y&&py<sceneArea.y+sceneArea.h)label(ctx,text,px,py,color,size,'center');}
+ if(mode==='population'){tag('Dendrites toward cortical surface',500+span/2,-4,C.teal,9);tag('Axons toward white matter ↓',529+span/2,641,C.teal,9);}
+ else if(camera.z<1.8){tag('E · glutamate',174,329,C.gold,10);tag('I · GABA',882+span,235,C.purple,10);tag(population.drawn>1?'Axons ↓':'Axon ↓',529+span/2,641,C.teal,10);}
+ else if(view==='exc'||view==='inh')tag(view==='inh'?'Neuron 1 · inhibitory contact':'Neuron 1 · excitatory contact',camera.x,camera.y-60,view==='inh'?C.purple:C.gold,11);
+ label(ctx,view==='circuit'?'Fit':camera.z.toFixed(1)+'×',sceneArea.x+sceneArea.w-8,19,C.muted,9,'right');
+ const postAge=time-s.lastPost;$('spike-banner').hidden=!(postAge>=0&&postAge<3);
+ const active=sources.some(source=>Math.abs(source.i)>1e-8);
+ $('population-summary').textContent=mode==='population'?'Cortical patch · 6 pyramids shown · anatomy is schematic':neuronCount.toLocaleString()+' pyramidal '+(neuronCount===1?'neuron':'neurons')+(neuronCount>12?' · 12 representatives shown':'')+(settings.rhythm?' · population input':' · 2 shared inputs');
+ $('population-dipole').textContent=mode==='population'?'Recurrent E/I network · stochastic background input':settings.rhythm?M.RHYTHMS[settings.rhythm].name+' · summed synaptic currents':active?'Aligned currents sum at each electrode':'At rest · no synaptic field';
+ $('scene').setAttribute('aria-label',neuronCount+' pyramidal neurons with '+population.drawn+' representatives shown. Electrode 1 is intracellular at the soma; electrode 2 is an extracellular point.'+(mode==='population'?' The cortical population is magnified from the brain in a head cross-section. Electrode 3 touches the outside of the scalp.':''));
+}
+function drawNetworkInterneurons(ctx){
+ for(const [x,y,index,target]of [[255,310,0,[637,296]],[1300,310,8,[1137,296]]]){
+  ctx.save();ctx.globalAlpha=.85;
+  for(let j=0;j<6;j++){const a=j*Math.PI/3;curved(ctx,[[x,y],[x+Math.cos(a)*27,y+Math.sin(a)*27],[x+Math.cos(a+.2)*50,y+Math.sin(a+.2)*50]],C.purple,2);}
+  curved(ctx,[[x,y+8],[(x+target[0])/2,y+66],target],C.purple,1.7);circle(ctx,...target,4,C.purple);
+  circle(ctx,x,y,13,'#c6b6d7',C.purple);label(ctx,'I',x,y,C.purple,12,'center');
+  const last=M.latest(population.inhibitory[index],time);if(time-last<7)glow(ctx,x,y,28,C.purple);
+  label(ctx,'Interneuron',x,y+67,C.purple,17,'center');ctx.restore();
+ }
+}
+function drawAnatomy(ctx,tr){
+ const width=sceneArea.x-8,top=sceneArea.y+26,height=sceneArea.h-20;if(width<45||height<40)return;
+ const radius=Math.min(width*.40,height*.30),cx=width*.5+3,cy=top+radius+20,colors=['#dbbca7','#e5dcc7','#d7e9f0','#d1d9c8'];
+ ctx.save();ctx.fillStyle='#f4f6eff5';ctx.fillRect(0,top-8,width+6,height+8);
+ for(let j=3;j>=0;j--)circle(ctx,cx,cy,radius*N.HEAD.radii[j]/92,colors[3-j],j===3?'#9c8e7b':'#ffffff');
+ const brainR=radius*78/92;circle(ctx,cx,cy+4,brainR*.72,'#e7ebe0');if(radius>40)label(ctx,'White matter',cx,cy+15,'#84947e',7,'center');
+ // A cortical ribbon and white-matter core provide schematic anatomical context.
+ for(const a of [-2.65,-.5,2.55,.65]){const x=cx+Math.cos(a)*brainR*.88,y=cy+Math.sin(a)*brainR*.88;curved(ctx,[[x,y],[cx+Math.cos(a+.12)*brainR*.67,cy+Math.sin(a+.12)*brainR*.67],[cx+Math.cos(a-.08)*brainR*.60,cy+Math.sin(a-.08)*brainR*.60]],'#a1b39c',1.2);}
+ const patchY=cy-brainR+5;ctx.fillStyle='#ffcb0577';ctx.fillRect(cx-9,patchY-5,18,10);ctx.strokeStyle=C.gold;ctx.strokeRect(cx-9,patchY-5,18,10);
+ const tipY=cy-radius;ctx.fillStyle='#b46137';ctx.beginPath();ctx.ellipse(cx,tipY-2,9,3,0,0,Math.PI*2);ctx.fill();line(ctx,[[cx,tipY-4],[cx,tipY-16],[cx+48,tipY-16]],'#b46137',1.6);circle(ctx,cx+55,tipY-16,7,'#b46137');label(ctx,'3',cx+55,tipY-16,'#fff',9,'center');
+ label(ctx,'Scalp electrode',cx-8,top-5,'#9d4d27',Math.min(9,width/12),'center');
+ ctx.setLineDash([3,3]);line(ctx,[[cx+10,patchY],[width+3,patchY],[Math.max(width+10,tr.tx+420*tr.scale),tr.ty+50*tr.scale]],C.gold,1);ctx.setLineDash([]);
+ label(ctx,'Cortex · magnified →',cx,cy+radius+13,C.teal,8,'center');
+ const labels=[['Scalp','#dbbca7'],['Skull','#e5dcc7'],['CSF','#d7e9f0'],['Brain','#d1d9c8']];
+ labels.forEach(([name,color],j)=>{const y=cy+radius+29+j*13;if(y<top+height-5){circle(ctx,cx-24,y,3,color,'#96a399');label(ctx,name,cx-15,y,C.muted,8);}});
+ ctx.restore();
+}
+function networkRaster(kind){
+ const id=kind==='E'?'e':'i',trains=kind==='E'?population.excitatory:population.inhibitory,{ctx,w,h}=context($('synapse-'+id)),win=Number($('window').value),end=Math.min(10000,Math.max(win,time+win*.06)),start=end-win,left=13,right=w-5,bottom=h-12,top=3;
+ ctx.fillStyle='#f7faf5';ctx.fillRect(0,0,w,h);const dy=(bottom-top)/trains.length;
+ trains.forEach((events,row)=>{const y=top+(row+.5)*dy;if(kind==='E'&&row===0){ctx.fillStyle='#e5efe0';ctx.fillRect(left,top,right-left,Math.max(2,dy));}ctx.strokeStyle=kind==='E'?(row===0?C.teal:C.gold):C.purple;ctx.lineWidth=kind==='E'&&row===0?1.7:1;ctx.beginPath();for(const t of events){if(t<start||t>time)continue;const x=left+(t-start)/win*(right-left);ctx.moveTo(x,y-Math.max(.6,dy*.35));ctx.lineTo(x,y+Math.max(.6,dy*.35));}ctx.stroke();});
+ label(ctx,'1',8,top+3,C.muted,6,'right');label(ctx,String(trains.length),8,bottom-2,C.muted,6,'right');
+ for(let j=0;j<=2;j++){const x=left+(right-left)*j/2;label(ctx,((start+win*j/2)/1000).toFixed(1)+' s',x,h-4,C.muted,7,j===2?'right':j===0?'left':'center');}
+ const mean=N.rate(trains,Math.max(0,time-2000),time);$('stage-'+id).textContent=mean.toFixed(1)+' spikes/s per cell · last 2 s';$('status-'+id).textContent=kind==='E'?'One row per pyramidal cell; first row is electrode 1.':'One row per interneuron; clusters show shared timing.';
+ $('synapse-'+id).setAttribute('aria-label',trains.length+' '+(kind==='E'?'pyramidal cells':'interneurons')+' spike raster, one row per cell. Mean firing '+mean.toFixed(1)+' spikes per second.');
+}
+function synapse(kind,s){
+ const isE=kind==='E',id=isE?'e':'i',{ctx,w,h}=context($('synapse-'+id));
+ // Layout uses a constant coordinate system to keep the cleft and membrane readable.
+ const scale=Math.min(w/460,h/164);ctx.save();ctx.translate((w-460*scale)/2,(h-164*scale)/2);ctx.scale(scale,scale);
+ const col=isE?C.gold:C.purple,g=isE?s.gE:s.gI,weight=isE?settings.weightE:settings.weightI,current=isE?s.iE:s.iI;
+ const preAge=time-(isE?s.lastE:s.lastI),releaseAge=time-(isE?s.releaseE:s.releaseI),opened=clamp(g/Math.max(weight,.001),0,1),active=g>.03;
+ ctx.fillStyle='#f5f7f0';ctx.fillRect(0,0,460,164);ctx.fillStyle=isE?'#f1e6bf':'#eae0f0';ctx.beginPath();ctx.roundRect(-18,33,185,101,25);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle='#dfebe1';ctx.fillRect(286,31,174,108);line(ctx,[[282,31],[282,139]],'#638e7d',3);line(ctx,[[289,31],[289,139]],'#638e7d',2);
+ label(ctx,'Input terminal',80,15,C.muted,13,'center');label(ctx,'Cleft',223,15,C.muted,13,'center');label(ctx,'Inside dendrite',372,15,C.teal,13,'center');
+ for(const [x,y]of [[39,67],[77,106],[113,57],[131,108]]){circle(ctx,x,y,11,'#ffffff88',col);for(let j=0;j<4;j++)circle(ctx,x+(j%2?3:-3),y+(j<2?-3:3),1.7,col);}
+ if(preAge>=6&&preAge<7){const f=preAge-6;circle(ctx,lerp(139,164,f),82,11,'#ffffffaa',col);for(let j=0;j<4;j++)circle(ctx,lerp(139,164,f)+(j%2?3:-3),82+(j<2?-3:3),1.7,col);}else if(releaseAge>=0&&releaseAge<2){ctx.beginPath();ctx.arc(164,82,10,-Math.PI/2,Math.PI/2,true);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();}
+ // Voltage-gated calcium channels in the terminal open when the AP arrives.
+ const calcium=preAge>=6&&preAge<9;if(calcium)glow(ctx,154,47,24,C.blue);line(ctx,[[140,35],[150,43]],calcium?C.blue:col,4);line(ctx,[[157,49],[164,55]],calcium?C.blue:col,4);if(!calcium)line(ctx,[[150,43],[157,49]],col,4);if(calcium){for(let j=0;j<4;j++){const f=(preAge-6+j*.3)%1;const x=lerp(193,135,f),y=lerp(24,65,f);circle(ctx,x,y,5,C.blue);label(ctx,'2+',x,y,'#fff',6,'center');}arrow(ctx,195,25,142,62,C.blue,1.8);label(ctx,'Ca²⁺ in',135,151,C.blue,13,'center');}else label(ctx,'Ca²⁺ gate',123,150,C.muted,12,'center');
+ if(releaseAge>=0&&releaseAge<8){const fading=clamp((8-releaseAge)/3,0,1);ctx.globalAlpha=fading;for(let j=0;j<12;j++){const f=clamp(releaseAge/sim.params.bindingDelay-j*.045,0,1),x=lerp(166,277,f),y=78+Math.sin(j*2.4)*24*(.3+f);circle(ctx,x,y,3,col);}ctx.globalAlpha=1;}
+ // A bound transmitter remains visible at the receptor while its conductance is active.
+ const bindingAge=releaseAge-sim.params.bindingDelay;
+ if(bindingAge>=0&&(active||bindingAge<.3))for(const cy of [66,109])circle(ctx,270,cy-7,3,col);
+ // Two open receptor pores make ion directions explicit.
+ for(const cy of [66,109]){ctx.fillStyle=active?col:'#9aa99c';ctx.fillRect(273,cy-11,24,6);ctx.fillRect(273,cy+5+opened*4,24,6);if(active){ctx.fillStyle='#fff';ctx.fillRect(278,cy-4,15,6+opened*4);}}
+ label(ctx,active?'Pores open':'Pores closed',300,151,active?col:C.muted,13,'center');
+ const inward=isE||current>0; // Cl− inward corresponds to outward conventional current.
+ if(active&&(isE||Math.abs(current)>.5)){
+  const ions=M.excitatoryIonCurrents(s),dots=flow=>clamp(Math.round(Math.abs(flow)/70),1,9);
+  const ionRows=isE?[{y:66,name:'Na⁺',dir:1,col:C.blue,n:dots(ions.na)},{y:109,name:'K⁺',dir:-1,col:C.coral,n:dots(ions.k)}]:[{y:66,name:'Cl⁻',dir:inward?1:-1,col:C.purple,n:5},{y:109,name:'Cl⁻',dir:inward?1:-1,col:C.purple,n:4}];
+  for(const row of ionRows){arrow(ctx,row.dir>0?240:343,row.y,row.dir>0?343:240,row.y,row.col,1);for(let j=0;j<row.n;j++){const f=((time/5+j/row.n)%1+1)%1,x=row.dir>0?lerp(235,350,f):lerp(350,235,f);circle(ctx,x,row.y,4,'#fff',row.col);}label(ctx,row.name+(row.dir>0?' in':' out'),389,row.y,row.col,14,'center');}
+ }else if(active){label(ctx,'Little net Cl⁻ flow',378,78,C.purple,11,'center');label(ctx,'Open pores still shunt',373,101,C.muted,10,'center');}
+ else{label(ctx,isE?'Na⁺ / K⁺':'Cl⁻',373,82,col,14,'center');label(ctx,'Waiting to bind',376,105,C.muted,12,'center');}
+ ctx.restore();
+ let status,stageText;
+ if(preAge>=0&&preAge<6){status='Spike → terminal; no new transmitter yet.';stageText='1 · Incoming action potential';}
+ else if(preAge>=6&&preAge<7){status='Ca²⁺ entry triggers vesicle fusion.';stageText='2 · Calcium enters the terminal';}
+ else if(releaseAge>=0&&bindingAge<0){status=active?'Earlier input keeps some channels open.':'Not bound yet → channels closed.';stageText='3 · Transmitter crosses the cleft';}
+ else if(bindingAge>=0&&bindingAge<.4){status='Binding first; conductance then rises.';stageText='4 · Binding → channel opening';}
+ else if(active){status=isE?'More positive charge enters than leaves.':Math.abs(current)<1?'Open pores can shunt excitation.':current>0?'Negative charge enters the dendrite.':'Negative charge leaves the dendrite.';stageText='5 · Postsynaptic ion flow';}
+ else{status='Transmitter must bind to open channels.';stageText='Ready for an input';}
+ $('status-'+id).textContent=status;
+ const stage=$('stage-'+id);stage.dataset.calcium=String(calcium);stage.textContent=stageText;
+ $('synapse-'+id).setAttribute('aria-label',(isE?'Excitatory':'Inhibitory')+' synapse. '+status+' Conductance '+g.toFixed(2)+' nS.');
+}
+function plot(s){
+ const{ctx,w,h}=context($('voltage')),win=Number($('window').value),end=Math.min(M.PARAMS.duration,Math.max(win,time+win*.06)),start=end-win,first=Math.max(0,Math.floor(start/sim.params.dt)),last=Math.min(sim.vm.length-1,Math.floor(time/sim.params.dt)),filtered=$('field-filter').value==='eeg';
+ const point=filtered?recording.pointEEG:recording.point,scalp=mode==='population'?(filtered?recording.scalpEEG:recording.scalp):null;
+ $('recording-note').textContent=mode==='population'?((Number($('field-scale').value)?'Shared ±'+$('field-scale').value+' µV':'Separate fitted µV scales')+' · local: distant ref · scalp: mean ref'):Number($('field-scale').value)?'Extracellular scale ±'+$('field-scale').value+' µV · distant reference':'Extracellular scale fits visible data · distant reference';
+ const channels=[{id:'intra',n:1,name:'Intracellular',unit:'mV',color:C.teal,data:sim.vm},{id:'extra',n:2,name:'Extracellular point',unit:'µV',color:C.blue,data:point},...(mode==='population'?[{id:'scalp',n:3,name:'Scalp EEG',unit:'µV',color:'#b46137',data:scalp}]:[])].filter(c=>$('show-'+c.id).checked);
+ const left=w<330?32:40,right=w-11,chartHeight=h-17,lane=chartHeight/Math.max(1,channels.length),xx=t=>left+(t-start)/win*(right-left),compact=lane<100;
+ const number=v=>Math.abs(v)>0&&Math.abs(v)<.05?v.toFixed(3):Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=10?v.toFixed(1):Math.abs(v)>=1?v.toFixed(1):v.toFixed(2);
+ function niceRange(v){const safe=Math.max(mode==='population'?.001:.05,v*1.12),power=10**Math.floor(Math.log10(safe));return [1,2,5,10].find(n=>n*power>=safe)*power;}
+ channels.forEach((channel,index)=>{
+  const top=index*lane+(compact?17:29),bottom=(index+1)*lane-9;let max=0,min=Infinity,high=-Infinity;
+  for(let k=first;k<=last;k++){const value=channel.data[k];max=Math.max(max,Math.abs(value));min=Math.min(min,value);high=Math.max(high,value);}
+  const field=channel.id!=='intra',limit=Number($('field-scale').value)||niceRange(max),lo=field?-limit:high>0?-85:-75,hi=field?limit:high>0?45:-45,negativeUp=field&&$('negative-up').checked;
+  const yy=value=>negativeUp?top+(value-lo)/(hi-lo)*(bottom-top):bottom-(value-lo)/(hi-lo)*(bottom-top);
+  ctx.fillStyle=index%2?'#f9fbf7':'#fff';ctx.fillRect(0,index*lane,w,lane-2);
+  label(ctx,channel.n+' '+channel.name,3,index*lane+(compact?7:10),channel.color,compact?8:10);
+  label(ctx,channel.unit+(field?(negativeUp?' · − up':' · + up'):' · + up'),right,index*lane+(compact?7:10),C.muted,compact?7:9,'right');
+  if(!compact)label(ctx,field?(filtered?'0.5–40 Hz · ':'Raw DC · ')+(channel.id==='scalp'?'mean scalp reference':'distant reference'):'Across soma membrane',3,index*lane+23,C.muted,8);
+  const ticks=field?[-limit,0,limit]:[-65,0,35].filter(v=>v>=lo&&v<=hi);
+  for(const v of ticks){const y=yy(v);line(ctx,[[left,y],[right,y]],v===0?'#d7dfd8':'#e8ede6',.7);label(ctx,number(v),left-5,y,C.muted,compact?6:8,'right');}
+  for(let tick=0;tick<=4;tick++){const x=left+(right-left)*tick/4;line(ctx,[[x,top],[x,bottom]],'#e8ede6',.7);}
+  if(!field&&sim.params.threshold>=lo&&sim.params.threshold<=hi){ctx.setLineDash([3,3]);line(ctx,[[left,yy(sim.params.threshold)],[right,yy(sim.params.threshold)]],'#c8a754',.8);ctx.setLineDash([]);if(!compact)label(ctx,'threshold',right-2,yy(sim.params.threshold)-5,'#9c7b22',7,'right');}
+  ctx.save();ctx.beginPath();ctx.rect(left,top,right-left,bottom-top);ctx.clip();ctx.beginPath();let begun=false;
+  // Keep narrow action potentials visible when many samples share one display pixel.
+  const stride=Math.max(1,Math.floor((last-first)/(right-left)*.7));for(let k=first;k<=last;k+=stride){let low=channel.data[k],high=low,li=k,hi=k;for(let j=k+1;j<Math.min(last+1,k+stride);j++){if(channel.data[j]<low){low=channel.data[j];li=j;}if(channel.data[j]>high){high=channel.data[j];hi=j;}}const pair=li<hi?[[li,low],[hi,high]]:[[hi,high],[li,low]];for(const [j,v]of pair){const x=xx(j*sim.params.dt),y=yy(v);if(!begun){ctx.moveTo(x,y);begun=true;}else ctx.lineTo(x,y);}}
+  ctx.strokeStyle=channel.color;ctx.lineWidth=1.4;ctx.lineJoin='round';ctx.stroke();line(ctx,[[xx(time),top],[xx(time),bottom]],'#596b5d55',.8);ctx.restore();
+ });
+ if(!channels.length)label(ctx,'Select a channel above to show its trace.',w/2,h/2,C.muted,11,'center');
+ for(let k=0;k<=4;k++){const t=start+win*k/4;label(ctx,win>=1000?(t/1000).toFixed(1)+' s':Math.round(t)+' ms',left+(right-left)*k/4,h-5,C.muted,8,k===4?'right':'center');}
+ const k=Math.min(sim.vm.length-1,Math.round(time/sim.params.dt));$('vm-value').textContent=s.vm.toFixed(1).replace('-','−');$('extra-value').textContent=number(point[k]).replace('-','−');$('spike-count').textContent=s.postCount+' APs';if(scalp)$('scalp-value').textContent=number(scalp[k]).replace('-','−');
+ $('voltage').setAttribute('aria-label',channels.map(c=>c.n+' '+c.name+' in '+c.unit).join('; ')+'. Shared biological time axis. '+(filtered?'Extracellular channel filtered 0.5 to 40 Hz.':'Raw extracellular channel.'));
+}
+function currentLesson(s){const ret=-s.iE-s.iI;$('return-current').textContent=Math.abs(ret)<.05?'Return current near neuron 1 soma: 0 pA':'Neuron 1 return: '+Math.abs(ret).toFixed(1)+' pA '+(ret>0?'out':'in');}
+const GUIDE_COPY={
+ spike:['1 · A spike travels along the input axon','An action potential travels toward the input terminal. Transmitter has not been released yet. Watch the bright dot move along the axon.'],
+ calcium:['2 · Calcium enters the terminal','The arriving spike opens calcium channels in the input terminal. Blue Ca²⁺ ions enter and trigger vesicle fusion. Follow their entry in both insets.'],
+ release:['3 · Transmitter crosses the gap','Released transmitter crosses the gap toward a receptor. Channels open only after it binds. During repeated inputs, earlier releases can keep some channels open.'],
+ binding:['4 · Binding comes before opening','Look for a bound dot on the outer face of the receptor. Binding comes first; channel conductance then rises, allowing ions across the dendritic membrane.'],
+ current:['5 · Open channels let ions flow','Na⁺ entry exceeds K⁺ exit: net positive charge enters the excitatory dendrite. Cl⁻ carries negative charge at the GABA contact. Compare the intracellular trace with the extracellular recording.'],
+ returns:['6 · Return currents complete the circuit','Current enters a dendrite, spreads inside, and crosses other membrane to return through the fluid. That balancing flow is a return current—shown near the soma here, distributed in real cells.'],
+ output:['7 · The receiving neuron fires','The soma crossed −50 mV: a new action potential travels down the target’s axon. The map colors show extracellular voltage; electrode 1 shows membrane voltage.']
+};
+function buildGuide(){const events=[];for(const [kind,spikes]of [['E',sim.spikesE],['I',sim.spikesI]])for(const t of spikes){const arrival=t+sim.params.axonDelay,release=arrival+sim.params.releaseDelay,binding=release+sim.params.bindingDelay;for(const [stage,when]of [['spike',t],['calcium',arrival],['release',release],['binding',binding],['current',binding+.3],['returns',binding+3.4]])if(when<=sim.params.duration)events.push({t:when,stage,inputs:[kind],keys:[kind+':'+stage]});}for(const t of sim.post)events.push({t,stage:'output',inputs:['target'],keys:['output']});events.sort((a,b)=>a.t-b.t||a.stage.localeCompare(b.stage));guideEvents=[];for(const event of events){const last=guideEvents.at(-1);if(last&&Math.abs(last.t-event.t)<1e-8&&last.stage===event.stage){last.inputs.push(...event.inputs);last.keys.push(...event.keys);}else guideEvents.push(event);}guideSeen=new Set();guideHold=null;guideElapsed=0;}
+function guideBox(){if(mode==='population'){const phase=population.meanI[Math.round(time/sim.params.dt)]>12?'Inhibition limits recruitment; recovery allows another wave.':'Excitatory input recruits cells; their spikes drive E and I neighbors.';$('guide-title').textContent='From a cortical population to scalp EEG';$('guide-text').textContent=phase+' Watch the raster rows: individual cells skip cycles while their synaptic currents sum. The scalp signal passes through CSF, skull and scalp.';$('guide-box').dataset.holding='false';$('guide-continue').hidden=true;return;}if(settings.rhythm&&$('speed').value!=='auto'){const rhythm=M.RHYTHMS[settings.rhythm];$('guide-title').textContent=rhythm.name+' · '+rhythm.hz+' Hz population rhythm';$('guide-text').textContent=neuronCount.toLocaleString()+' pyramidal neurons receive coordinated, rhythmically varying E/I input. '+rhythm.shape+'. The extracellular trace shows the field from these summed synaptic currents.';$('guide-box').dataset.holding='false';$('guide-continue').hidden=true;$('guide-countdown').textContent='Population rhythm view';return;}let event=guideHold;const holds=$('guide-pauses').checked&&$('speed').value==='auto';if(!event){for(let k=guideEvents.length-1;k>=0;k--)if(guideEvents[k].t<=time+1e-8){event=guideEvents[k];break;}}
+ const [title,body]=event?GUIDE_COPY[event.stage]:['Follow the circuit, one stage at a time','Run the circuit to follow spikes → Ca²⁺ → release → binding → ion flow. Auto pauses briefly to explain each new stage. Both insets and the trace follow neuron 1.'];
+ const target=event?' · '+(event.inputs.includes('target')?'target neuron':event.inputs.length>1?'E + I inputs':event.inputs[0]+' input'):'';
+ if($('guide-title').textContent!==title+target)$('guide-title').textContent=title+target;if($('guide-text').textContent!==body)$('guide-text').textContent=body;
+ $('guide-box').dataset.holding=String(Boolean(guideHold&&holds));$('guide-continue').hidden=!(guideHold&&holds);
+ $('guide-countdown').textContent=guideHold&&holds?(running?'Resumes in '+Math.max(1,Math.ceil((3000-guideElapsed)/1000))+' s':'Paused at this stage'):holds?'3 s per new stage':'Stage pauses off';
+}
+function advanceAuto(elapsed){
+ if(!$('guide-pauses').checked){guideHold=null;time=M.advancePlayback(playbackPlan,time,elapsed);return;}
+ if(guideHold){guideElapsed+=elapsed;if(guideElapsed>=3000){guideHold=null;guideElapsed=0;}return;}
+ const nextTime=M.advancePlayback(playbackPlan,time,elapsed),event=guideEvents.find(e=>e.t>=time-1e-8&&e.t<=nextTime+1e-8&&e.keys.some(key=>!guideSeen.has(key)));
+ if(event){time=event.t;guideHold=event;guideElapsed=0;for(const key of event.keys)guideSeen.add(key);}else time=nextTime;
+}
+function playbackStatus(){const auto=$('speed').value==='auto',stage=auto?M.playbackAt(playbackPlan,time):null;let text=auto?stage.label:(1/Number($('speed').value)).toLocaleString('en-US')+'× slower';if(!auto&&Number($('speed').value)===1)text='Real biological time';$('playback-status').textContent=(running?'':'Paused · ')+text;$('playback-status').dataset.calcium=String(auto&&stage.speed===.0005);}
+function render(){if(!dims.size)return;const s=M.sample(sim,time);scene(s);if(mode==='population'){networkRaster('E');networkRaster('I');}else{synapse('E',s);synapse('I',s);}plot(s);currentLesson(s);playbackStatus();guideBox();$('time').value=time;$('time-value').textContent=(time/1000).toFixed(4)+' s';
+}
+
+function updateEvents(){if(mode==='population'){allEvents=[...sim.post];playbackPlan=[{t:0,speed:1,label:'Network activity · real biological time'}];guideEvents=[];guideHold=null;return;}allEvents=[...sim.spikesE,...sim.spikesI,...sim.post].sort((a,b)=>a-b);playbackPlan=M.playbackSchedule(sim);buildGuide();}
+function syncControls(){
+ if(mode==='population'){syncNetworkControls();return;}
+ $('neuron-count').value=neuronCount;$('neuron-count-value').value=neuronCount;
+ document.querySelector('h1').innerHTML=neuronCount===1?'One neuron. <em>Two inputs.</em>':neuronCount.toLocaleString()+' neurons. <em>Two electrodes.</em>';
+ for(const el of document.querySelectorAll('[data-rhythm]'))el.setAttribute('aria-pressed',String(el.dataset.rhythm===settings.rhythm));
+ $('recording-mode').textContent=settings.rhythm?M.RHYTHMS[settings.rhythm].name+' · '+M.RHYTHMS[settings.rhythm].hz+' Hz':'Circuit';
+ $('rhythm-description').textContent=settings.rhythm?M.RHYTHMS[settings.rhythm].shape+'. Peak input rates below 100 Hz.':'Band presets recruit a rhythmically driven population.';
+ $('population-help').textContent=settings.rhythm?population.drawn+' drawn pyramids represent the population. E/I inputs show one member’s activity.':'Two inputs drive aligned targets. Insets and intracellular trace follow neuron 1.';
+ for(const key of ['rateE','rateI']){$(key).value=settings[key];$(key+'-slider').value=settings[key];const rate=settings[key],id=key==='rateE'?'e':'i';$('period-'+id).textContent=settings.rhythm?('Peak '+rate+' Hz · rhythmic input'):rate===0?'Silent · no presynaptic spikes':rate<2?'One spike every '+(1/rate).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')+' seconds':rate.toFixed(1).replace('.0','')+' spikes / second · '+(1000/rate).toFixed(1)+' ms apart';$('next-'+id).disabled=rate===0;$('replay-'+id).disabled=rate===0;}
+ $('phase').value=settings.phase;$('phase-value').textContent=settings.phase+'°';$('phase-note').textContent=settings.rhythm?'I rate-envelope phase within the population rhythm.':settings.rateI===0?'Inhibitory input is silent; phase has no effect.':settings.rateE===settings.rateI?'Equal rates: 0° aligned; 180° is half a cycle later.':'Unequal rates drift. I starts +'+(((settings.phase%360)/360)*1000/settings.rateI).toFixed(1)+' ms into its cycle.';
+ for(const k of ['weightE','weightI']){$(k).value=settings[k];$(k+'-value').textContent=settings[k]+' nS';}$('reversalI').value=settings.reversalI;
+}
+function setRunning(value){running=value;const name=mode==='population'?'network':'circuit';$('play').textContent=(running?'Ⅱ Pause ':'▶ Run ')+name;}
+function rebuildPopulation(){population=M.population(settings,neuronCount,sim);recording=M.recordings(population,geometry);modelRevision++;fieldKernel=null;}
+function recompute(){if(mode==='population'){recomputeNetwork();return;}sim=M.simulate(settings);rebuildPopulation();time=settings.rhythm?(settings.rhythm==='delta'?6000:4000):320;updateEvents();syncControls();chooseView('circuit');}
+function chooseView(next){view=next;if(next==='circuit')fitCircuit();else camera=next==='exc'?{x:431,y:230,z:3}:next==='inh'?{x:637,y:296,z:3}:{x:500,y:330,z:1.25};for(const el of document.querySelectorAll('[data-view]'))el.setAttribute('aria-pressed',String(el.dataset.view===next));render();}
+for(const key of ['rateE','rateI']){for(const id of [key,key+'-slider'])$(id).addEventListener('input',()=>{if($(id).value===''||!Number.isFinite(Number($(id).value)))return;settings[key]=Math.round(clamp(Number($(id).value),0,100)*10)/10;recompute();});$(key).addEventListener('change',syncControls);}
+for(const key of ['phase','weightE','weightI','reversalI'])$(key).addEventListener('input',()=>{settings[key]=Number($(key).value);recompute();});
+for(const el of document.querySelectorAll('[data-view]'))el.addEventListener('click',()=>chooseView(el.dataset.view));
+for(const el of document.querySelectorAll('[data-preset]'))el.addEventListener('click',()=>{settings={...M.DEFAULTS,...({sparse:{},summation:{rateE:40},inhibition:{rateE:40,rateI:40}}[el.dataset.preset])};neuronCount=1;$('field-filter').value='raw';$('window').value='300';$('speed').value='auto';recompute();setRunning(true);});
+for(const el of document.querySelectorAll('[data-rhythm]'))el.addEventListener('click',()=>{const rhythm=el.dataset.rhythm;settings={...M.DEFAULTS,rateE:100,rateI:100,phase:60,weightE:2.5,weightI:7,rhythm};neuronCount={delta:4096,theta:2048,alpha:2048,beta:1024}[rhythm];$('field-filter').value='eeg';$('field-scale').value='0';$('window').value=rhythm==='delta'?'4000':rhythm==='beta'?'1000':'2000';$('speed').value='1';recompute();setRunning(true);});
+for(const id of ['field','arrows','window','speed','guide-pauses','field-filter','field-scale','negative-up','show-intra','show-extra','show-scalp'])$(id).addEventListener('change',render);
+$('reset').addEventListener('click',()=>{if(mode==='population'){networkSettings={...N.DEFAULTS};networkPreset='alpha';$('window').value='2000';$('speed').value='1';$('field-filter').value='eeg';$('field-scale').value='0';$('negative-up').checked=true;for(const id of ['intra','extra','scalp'])$('show-'+id).checked=true;recomputeNetwork();setRunning(false);render();return;}neuronCount=1;$('neuron-count').value=1;$('neuron-count-value').value='1';$('guide-pauses').checked=true;document.querySelector('h1').innerHTML='One neuron. <em>Two inputs.</em>';settings={...M.DEFAULTS};setRunning(false);$('speed').value='auto';$('window').value='300';$('field').checked=true;$('arrows').checked=false;$('field-filter').value='raw';$('field-scale').value='0';$('negative-up').checked=true;for(const id of ['intra','extra'])$('show-'+id).checked=true;recompute();chooseView('circuit');});
+$('play').addEventListener('click',()=>{if(time>=10000)time=0;setRunning(!running);render();});
+$('time').addEventListener('input',()=>{guideHold=null;time=Number($('time').value);setRunning(false);render();});
+function nextEvent(events){if(!events.length)return;guideHold=null;const next=events.find(t=>t>time+.2)??events[0];time=Math.max(0,next-2);setRunning(true);render();}
+$('step').addEventListener('click',()=>{guideHold=null;time=Math.min(10000,time+.1);setRunning(false);render();});
+$('next-event').addEventListener('click',()=>nextEvent(allEvents));$('next-e').addEventListener('click',()=>nextEvent(sim.spikesE));$('next-i').addEventListener('click',()=>nextEvent(sim.spikesI));
+for(const id of ['e','i'])$('replay-'+id).addEventListener('click',()=>{const events=(id==='e'?sim.spikesE:sim.spikesI).filter(t=>t+sim.params.axonDelay+3<=sim.params.duration);if(!events.length)return;const event=M.latest(events,time);guideSeen=new Set();guideHold=null;time=(Number.isFinite(event)?event:events[0])+sim.params.axonDelay;$('speed').value='auto';setRunning(true);render();});
+function changePopulation(value){neuronCount=Math.round(clamp(Number(value)||1,1,4096));rebuildPopulation();syncControls();chooseView('circuit');}
+$('neuron-count').addEventListener('input',()=>changePopulation($('neuron-count').value));
+$('neuron-count-value').addEventListener('change',()=>changePopulation($('neuron-count-value').value));
+$('guide-continue').addEventListener('click',()=>{guideHold=null;guideElapsed=0;setRunning(true);render();});
+$('biology-open').addEventListener('click',()=>$('biology-dialog').showModal());
+$('biology-close').addEventListener('click',()=>$('biology-dialog').close());
+function toggleControls(open){$('controls').classList.toggle('open',open);$('controls-toggle').setAttribute('aria-expanded',String(open));if(!open)$('controls-toggle').focus();}
+$('controls-toggle').addEventListener('click',()=>toggleControls(!$('controls').classList.contains('open')));
+$('controls-close').addEventListener('click',()=>toggleControls(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('controls').classList.contains('open'))toggleControls(false);});
+const sharedOptions=['window','speed','field-filter','field-scale','negative-up','field','arrows','show-intra','show-extra','show-scalp','guide-pauses'];
+function syncNetworkControls(){
+ document.querySelector('h1').innerHTML='Cortical rhythms. <em>Scalp EEG.</em>';
+ $('recording-mode').textContent='Recurrent network';
+ for(const key of ['rateE','rateI','inputsE','inputsI','coupling','inhibition','recovery'])$('net-'+key).value=networkSettings[key];
+ $('net-coupling-value').textContent=networkSettings.coupling.toFixed(1)+'×';$('net-inhibition-value').textContent=networkSettings.inhibition.toFixed(1)+'×';$('net-recovery-value').textContent=networkSettings.recovery+' ms';
+ $('network-e-total').textContent=networkSettings.inputsE*networkSettings.rateE+' incoming spikes/s per cell, on average.';$('network-i-total').textContent=networkSettings.inputsI*networkSettings.rateI+' incoming spikes/s per cell, on average.';
+ for(const el of document.querySelectorAll('[data-network]'))el.setAttribute('aria-pressed',String(el.dataset.network===networkPreset));
+ $('network-result').textContent='Trial '+networkSettings.seed+' · rates below the rasters are measured output. Adjustments may change or abolish alpha.';
+}
+function recomputeNetwork(){
+ population=N.simulate(networkSettings);sim=population.sim;settings=sim.settings;neuronCount=population.count;recording={...M.recordings(population,geometry),...N.scalpRecordings(population,geometry)};time=4000;modelRevision++;fieldKernel=null;updateEvents();syncControls();chooseView('circuit');
+}
+function switchMode(next){
+ if(next===mode)return;
+ modeCache[mode]={settings:{...settings},sim,population,recording,time,neuronCount,running,options:Object.fromEntries(sharedOptions.map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))};
+ mode=next;document.body.classList.toggle('network-mode',mode==='population');$('circuit-controls').hidden=mode==='population';$('network-controls').hidden=mode!=='population';$('scalp-channel').hidden=$('scalp-readout').hidden=mode!=='population';
+ $('circuit').setAttribute('aria-labelledby','tab-'+mode);$('mode-context').textContent=mode==='population'?'Many inputs → recurrent activity → cortical fields → scalp':'Spikes → synapses → membrane voltage';
+ for(const el of document.querySelectorAll('[data-mode]')){el.setAttribute('aria-selected',String(el.dataset.mode===mode));el.tabIndex=el.dataset.mode===mode?0:-1;}
+ $('negative-up').parentElement.title=mode==='population'?'Applies to local and scalp fields':'Applies to the extracellular channel';$('recording-sites').textContent=mode==='population'?'Three recording sites':'Two recording sites';document.querySelector('.recordings-heading h2').textContent=mode==='population'?'From cortex to scalp':'From cell to electrode';
+ $('exc-title').innerHTML=mode==='population'?'<span class="input-dot exc">E</span> Pyramidal spikes · 64 cells':'<span class="input-dot exc">E</span> Glutamate';$('inh-title').innerHTML=mode==='population'?'<span class="input-dot inh">I</span> Interneuron spikes · 16 cells':'<span class="input-dot inh">I</span> GABA';
+ document.querySelector('.synapses').setAttribute('aria-label',mode==='population'?'Network spike rasters':'Live synapse insets for neuron 1');
+ $('speed').querySelector('[value="auto"]').disabled=mode==='population';
+ const saved=modeCache[mode];if(saved){({settings,sim,population,recording,time,neuronCount}=saved);for(const [id,value]of Object.entries(saved.options)){if($(id).type==='checkbox')$(id).checked=value;else $(id).value=value;}modelRevision++;fieldKernel=null;updateEvents();syncControls();setRunning(saved.running);}else{$('window').value='2000';$('speed').value='1';$('field-filter').value='eeg';$('field-scale').value='0';recomputeNetwork();setRunning(true);}
+ view='circuit';resize();
+}
+for(const button of document.querySelectorAll('[data-mode]')){button.addEventListener('click',()=>switchMode(button.dataset.mode));button.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const next=e.key==='Home'?'circuit':e.key==='End'?'population':mode==='population'?'circuit':'population';switchMode(next);$('tab-'+next).focus();}});}
+for(const key of ['rateE','rateI','inputsE','inputsI','coupling','inhibition','recovery'])$('net-'+key).addEventListener('change',()=>{const el=$('net-'+key);if(el.value===''||!el.validity.valid){el.value=networkSettings[key];return;}networkSettings[key]=Number(el.value);networkPreset='custom';recomputeNetwork();});
+for(const button of document.querySelectorAll('[data-network]'))button.addEventListener('click',()=>{networkPreset=button.dataset.network;networkSettings={...N.DEFAULTS,...({alpha:{},uncoupled:{coupling:0},excitation:{rateE:3},inhibition:{inhibition:1.5}}[networkPreset])};recomputeNetwork();setRunning(true);});
+$('network-trial').addEventListener('click',()=>{networkSettings.seed++;recomputeNetwork();setRunning(true);});
+const sceneEl=$('scene');
+sceneEl.addEventListener('wheel',e=>{e.preventDefault();const rect=sceneEl.getBoundingClientRect(),d=dims.get(sceneEl),tr=cameraTransform(d.w,d.h),mx=e.clientX-rect.left,my=e.clientY-rect.top,wx=(mx-tr.tx)/tr.scale,wy=(my-tr.ty)/tr.scale;view='custom';camera.z=clamp(camera.z*Math.exp(-e.deltaY*.0018),.12,5);const tr2=cameraTransform(d.w,d.h);camera.x=wx-(mx-tr2.cx)/tr2.scale;camera.y=wy-(my-tr2.cy)/tr2.scale;for(const b of document.querySelectorAll('[data-view]'))b.setAttribute('aria-pressed','false');render();},{passive:false});
+sceneEl.addEventListener('pointerdown',e=>{sceneEl.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,cx:camera.x,cy:camera.y};});
+sceneEl.addEventListener('pointermove',e=>{if(!drag)return;view='custom';const d=dims.get(sceneEl),tr=cameraTransform(d.w,d.h);camera.x=drag.cx-(e.clientX-drag.x)/tr.scale;camera.y=drag.cy-(e.clientY-drag.y)/tr.scale;render();});
+for(const name of ['pointerup','pointercancel','lostpointercapture'])sceneEl.addEventListener(name,()=>{drag=null;});
+sceneEl.addEventListener('keydown',e=>{if(['+','=','-','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))view='custom';const pan=30/camera.z;switch(e.key){case '+':case '=':camera.z=clamp(camera.z*1.2,.12,5);break;case '-':camera.z=clamp(camera.z/1.2,.12,5);break;case 'ArrowLeft':camera.x-=pan;break;case 'ArrowRight':camera.x+=pan;break;case 'ArrowUp':camera.y-=pan;break;case 'ArrowDown':camera.y+=pan;break;case 'Home':chooseView('circuit');break;default:return;}e.preventDefault();render();});
+function frame(now){const elapsed=Math.min(50,now-lastFrame||16);lastFrame=now;if(running){if($('speed').value==='auto')advanceAuto(elapsed);else{guideHold=null;time=Math.min(10000,time+elapsed*Number($('speed').value));}if(time>=10000){if(mode==='population'||settings.rhythm)time=settings.rhythm==='delta'?6000:4000;else setRunning(false);}render();}requestAnimationFrame(frame);}
+updateEvents();syncControls();const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(document.querySelector('.laboratory'));for(const canvas of cvs)resizeObserver.observe(canvas);resize();requestAnimationFrame(frame);
+})();
+
+</script>
+</body></html>
